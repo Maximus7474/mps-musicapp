@@ -23,7 +23,6 @@ export function HomePage() {
       setLatestSongs((prev) => {
         const list = [...prev];
         list[idx] = { ...list[idx], liked: state };
-        console.log('updating', list);
         return list;
       });
     } else {
@@ -53,8 +52,6 @@ export function HomePage() {
       setRecentPlaylists(data.recentplaylists);
     });
   }, []);
-
-  console.log('rendering lsit', latestSongs);
 
   return (
     <div className='page-container'>

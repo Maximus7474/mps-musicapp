@@ -28,7 +28,7 @@ export const Image: React.FC<ImageFallbackProps> = ({
         fallbackSrc ? (
           <img src={fallbackSrc} alt={alt} className='img-element fallback' {...props} />
         ) : (
-          <div className='img-fallback-placeholder'>
+          <div className='img-fallback-placeholder' {...props}>
             <ImageOff size={24} />
             {fallbackLabel && <span className='fallback-label'>{fallbackLabel}</span>}
           </div>

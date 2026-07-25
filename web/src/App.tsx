@@ -4,6 +4,7 @@ import Frame from './components/dev/Frame';
 import { Routes, Route } from 'react-router-dom';
 import ThemeToggler from './components/dev/Theming';
 import { PageLayout } from './components/PageLayout';
+import { HomePage, LibraryPage, ProfilePage, SearchPage } from './pages';
 
 import './styles/App.scss';
 import './pages/pages.scss';
@@ -26,8 +27,10 @@ const App = () => {
       <div className='app' ref={appDiv}>
         <Routes>
           <Route path='/' element={<PageLayout />}>
-            <Route index element={<Home />} />
-            <Route path='nothome' element={<NotHome />} />
+            <Route index element={<HomePage />} />
+            <Route path='library' element={<LibraryPage />} />
+            <Route path='profile' element={<ProfilePage />} />
+            <Route path='search' element={<SearchPage />} />
 
             {/* Redirect if accessing an unknown or unauthorised page */}
             <Route path='*' element={<Navigate to='/' replace />} />

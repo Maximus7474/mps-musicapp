@@ -1,0 +1,47 @@
+$brand-purple: #a259ff;
+$brand-purple-hover: #c084fc;
+$brand-purple-dark: #7c3aed;
+
+$light-colors: (
+  "bg-app": #ffffff,
+  "bg-surface": #f3f4f6,
+  "bg-surface-hover": #e5e7eb,
+  "bg-surface-active": #d1d5db,
+  "text-primary": #111827,
+  "text-secondary": #6b7280,
+  "text-muted": #9ca3af,
+  "text-brand": #8b5cf6,
+  "border-color": #e5e7eb,
+  "icon-inactive": #d1d5db,
+  "icon-hover": #9ca3af
+);
+
+$dark-colors: (
+  "bg-app": #121212,
+  "bg-surface": rgba(255, 255, 255, 0.08),
+  "bg-surface-hover": rgba(255, 255, 255, 0.05),
+  "bg-surface-active": rgba(255, 255, 255, 0.12),
+  "text-primary": #ffffff,
+  "text-secondary": rgba(255, 255, 255, 0.6),
+  "text-muted": rgba(255, 255, 255, 0.3),
+  "text-brand": #c084fc,
+  "border-color": rgba(255, 255, 255, 0.08),
+  "icon-inactive": rgba(255, 255, 255, 0.2),
+  "icon-hover": rgba(255, 255, 255, 0.6)
+);
+
+:root {
+  $brand-purple: #a259ff;
+  --color-brand: #{$brand-purple};
+  --color-brand-hover: #{$brand-purple-hover};
+
+  @each $key, $value in $light-colors {
+    --#{$key}: #{$value};
+  }
+}
+
+[data-theme='dark'] {
+  @each $key, $value in $dark-colors {
+    --#{$key}: #{$value};
+  }
+}

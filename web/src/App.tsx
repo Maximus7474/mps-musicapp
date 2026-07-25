@@ -1,12 +1,12 @@
 import { type ReactNode, useEffect, useRef } from 'react';
+import { Navigate } from 'react-router-dom';
 import Frame from './components/dev/Frame';
 import { Routes, Route } from 'react-router-dom';
 import ThemeToggler from './components/dev/Theming';
-import PageLayout from './components/PageLayout';
-import { Navigate } from 'react-router-dom';
-import { Home, NotHome } from './pages';
+import { PageLayout } from './components/PageLayout';
 
 import './App.scss';
+import './pages/pages.scss';
 
 const devMode = !window?.['invokeNative'];
 

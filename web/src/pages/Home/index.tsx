@@ -5,8 +5,10 @@ import { fetchNui } from '../../utils/fetchNui';
 import { Image } from '../../components/ImageFallback';
 import type { ArtistBasic, BasicResponse, PlaylistBasic, SongBasic } from '@common/types';
 import { MOCK_SONGS, MOCK_ARTISTS, MOCK_PLAYLISTS } from '../../mockdata/index';
+import { useNavigate } from 'react-router-dom';
 
 export function HomePage() {
+  const navigate = useNavigate();
   const [latestSongs, setLatestSongs] = useState<SongBasic[]>([]);
   const [recentArtists, setRecentArtists] = useState<ArtistBasic[]>([]);
   const [recentPlaylists, setRecentPlaylists] = useState<PlaylistBasic[]>([]);
@@ -67,7 +69,11 @@ export function HomePage() {
 
       {/* playlists */}
       <div>
-        <SectionHeader title='Recent Playlists' action='See all' />
+        <SectionHeader
+          title='Recent Playlists'
+          action='See all'
+          onActionClick={() => navigate('/library?tab=playlists')}
+        />
         <div className='horizontal-scroll-list'>
           {recentPlaylists.map((p) => (
             <div key={p.id} className='playlist-card'>
@@ -87,7 +93,7 @@ export function HomePage() {
 
       {/* recent artists */}
       <div>
-        <SectionHeader title='Listening To' action='See all' />
+        <SectionHeader title='Listening To' action='See all' onActionClick={() => navigate('/library?tab=artists')} />
         <div className='horizontal-scroll-list artists'>
           {recentArtists.map((a) => (
             <div key={a.id} className='artist-avatar-card'>

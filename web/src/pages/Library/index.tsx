@@ -5,8 +5,10 @@ import { generateGradient } from '../../utils/utils';
 import { Image } from '../../components/ImageFallback';
 import type { ArtistBasic, PlaylistBasic } from '@common/types';
 import { MOCK_ARTISTS, MOCK_PLAYLISTS } from '../../mockdata';
+import { useSearchParams } from 'react-router-dom';
 
 export function LibraryPage() {
+  const [searchParams] = useSearchParams();
   const [tab, setTab] = useState<'playlists' | 'artists'>('playlists');
   const [artists, setArtists] = useState<ArtistBasic[]>([]);
   const [playlists, setPlaylists] = useState<PlaylistBasic[]>([]);
@@ -23,6 +25,11 @@ export function LibraryPage() {
       setArtists(data.artists);
       setPlaylists(data.playlists);
     });
+
+    const tab = searchParams.get('tab');
+    if (tab && ['playlists', 'artists'].includes(tab)) {
+      setTab(tab as 'playlists' | 'artists');
+    }
   }, []);
 
   return (

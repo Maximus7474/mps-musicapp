@@ -1,16 +1,24 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Footer from './Footer';
+import { NowPlayingBar } from './NowPlaying';
 
-const PageLayout: React.FC = () => {
+import './PageLayout.scss';
+
+export const PageLayout: React.FC = () => {
+  const { pathname } = useLocation();
+  const showPlaying = pathname !== '/profile';
+
   return (
     <div className='app-wrapper'>
-      <main>
+      <main className='app-content'>
         <Outlet />
       </main>
-      <Footer />
+
+      <div className='app-bottom-dock'>
+        {showPlaying && <NowPlayingBar />}
+        <Footer />
+      </div>
     </div>
   );
 };
-
-export default PageLayout;

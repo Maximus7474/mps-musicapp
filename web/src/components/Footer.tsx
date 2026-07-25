@@ -1,12 +1,15 @@
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, X } from 'lucide-react';
+import { Home, Library, Search, User } from 'lucide-react';
 import type { NavItem } from '../types';
 
 import './Footer.scss';
 
-const routes: NavItem[] = [
-  { id: 'home', icon: <Home />, path: '/', tooltip: 'Home' },
-  { id: 'not_home', icon: <X />, path: '/nothome', tooltip: 'Not Home' },
+const routes: (NavItem & { label: string })[] = [
+  { id: 'home', icon: <Home size={20} />, path: '/', tooltip: 'Home', label: 'Home' },
+  { id: 'search', icon: <Search size={20} />, path: '/search', tooltip: 'Search', label: 'Search' },
+  { id: 'library', icon: <Library size={20} />, path: '/library', tooltip: 'Library', label: 'Library' },
+  { id: 'profile', icon: <User size={20} />, path: '/profile', tooltip: 'Profile', label: 'Profile' },
 ];
 
 const Footer: React.FC = () => {
@@ -14,11 +17,19 @@ const Footer: React.FC = () => {
 
   return (
     <footer className='app-footer'>
-      {routes.map(({ icon, path /* requiresAuth */ }, i) => (
-        <Link to={path} key={i} className={pathname === path ? 'selected' : undefined}>
-          {icon}
-        </Link>
-      ))}
+      <nav className='footer-nav'>
+        {routes.map(({ id, icon, path, label }) => {
+          const isActive = pathname === path;
+
+          return (
+            <Link key={id} to={path} className={`nav-item ${isActive ? 'active' : ''}`}>
+              {icon}
+              <span className='nav-label'>{label}</span>
+              {/*{isActive && <div className='active-dot' />}*/}
+            </Link>
+          );
+        })}
+      </nav>
     </footer>
   );
 };

@@ -5,7 +5,7 @@ import { Routes, Route } from 'react-router-dom';
 import ThemeToggler from './components/dev/Theming';
 import { PageLayout } from './components/PageLayout';
 
-import './App.scss';
+import './styles/App.scss';
 import './pages/pages.scss';
 
 const devMode = !window?.['invokeNative'];

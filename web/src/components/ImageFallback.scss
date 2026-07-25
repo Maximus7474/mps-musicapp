@@ -1,0 +1,67 @@
+@use '../colors';
+
+.img-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: var(--background-highlight, #1e1e2d);
+  width: 100%;
+  height: 100%;
+
+  .img-element {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.25s ease-in-out;
+
+    &.loading {
+      opacity: 0;
+    }
+
+    &.loaded {
+      opacity: 1;
+    }
+  }
+
+  // Pulse skeleton animation during load
+  .img-skeleton {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.05) 25%,
+      rgba(255, 255, 255, 0.12) 50%,
+      rgba(255, 255, 255, 0.05) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-pulse 1.5s infinite;
+  }
+
+  // Placeholder icon + label view
+  .img-fallback-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    color: var(--text-secondary, #6f6f6f);
+    padding: 0.5rem;
+    text-align: center;
+
+    .fallback-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+  }
+}
+
+@keyframes skeleton-pulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

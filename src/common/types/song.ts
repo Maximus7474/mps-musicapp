@@ -13,6 +13,8 @@ export type ArtistBasic = {
   id: number;
   name: string;
   image?: string;
+  genre: string;
+  followers: number;
 };
 
 export type PlaylistBasic = {

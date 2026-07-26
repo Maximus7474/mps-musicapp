@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { fetchNui } from '../../utils/fetchNui';
+import { fetchNui } from '../../../utils/fetchNui';
 import type { ArtistProfile } from '@common/types';
 import { ChevronLeft, HeartIcon, PlayIcon, ShareIcon, ShuffleIcon, Verified } from 'lucide-react';
-import { MOCK_ARTIST_PROFILE } from '../../mockdata';
-import { Image } from '../../components/ImageFallback';
-import { formatNumber } from '../../utils/utils';
+import { MOCK_ARTIST_PROFILE } from '../../../mockdata';
+import { Image } from '../../../components/ImageFallback';
+import { formatNumber } from '../../../utils/utils';
 
 export const ArtistPage: React.FC = () => {
   const navigate = useNavigate();

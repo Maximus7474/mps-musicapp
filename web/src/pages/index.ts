@@ -1,5 +1,5 @@
 export { HomePage } from './Home';
 export { LibraryPage } from './Library';
-export { ProfilePage } from './Profile';
 export { SearchPage } from './Search';
-export { ArtistPage } from './Artist';
+export { ProfilePage } from './Profiles/Personal';
+export { ArtistPage } from './Profiles/Artist';

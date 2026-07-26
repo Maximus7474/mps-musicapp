@@ -18,7 +18,7 @@ export const Image: React.FC<ImageFallbackProps> = ({
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const showFallback = hasError || !src;
+  const showFallback = hasError || !src || src === '';
 
   return (
     <div className={`img-container ${className}`}>

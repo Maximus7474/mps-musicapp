@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchNui } from '../../utils/fetchNui';
 import type { ArtistProfile } from '@common/types';
-import { ChevronLeft, HeartIcon, MoreHorizontal, PlayIcon, ShareIcon, ShuffleIcon } from 'lucide-react';
+import { ChevronLeft, HeartIcon, MoreHorizontal, PlayIcon, ShareIcon, ShuffleIcon, Verified } from 'lucide-react';
 import { MOCK_ARTIST_PROFILE } from '../../mockdata';
 import { Image } from '../../components/ImageFallback';
 
@@ -44,44 +44,31 @@ export const ArtistPage: React.FC = () => {
 
   return (
     <div className='page-container' ref={scrollRef}>
-      {/* Hero Header */}
-      <div className='page-header'>
-        <Image src={artist.image || ''} alt={artist.name} className='w-full h-full object-cover' />
-        <div
-          className='absolute inset-0'
-          style={{
-            background: 'linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.0) 40%, rgba(0,0,0,1) 100%)',
-          }}
-        />
-        <button onClick={() => navigate(-1)} className='absolute top-4 left-4 icon-button'>
-          <ChevronLeft />
+      <div className='artist-hero'>
+        <Image src={artist.image || ''} alt={artist.name} className='hero-image' />
+        <div className='hero-overlay' />
+        <button onClick={() => navigate(-1)} className='icon-button top-left'>
+          <ChevronLeft color='white' />
         </button>
-        <button className='absolute top-4 right-4 icon-button'>
-          <ShareIcon />
+        <button className='icon-button top-right'>
+          <ShareIcon color='white' />
         </button>
-        <div className='absolute bottom-3 left-4 right-4 flex items-end justify-between'>
+
+        <div className='hero-content'>
           <div>
-            <div className='flex items-center gap-1.5 mb-0.5'>
-              <div className='w-4 h-4 rounded-full bg-[var(--color-brand)] flex items-center justify-center'>
-                <svg width='8' height='8' viewBox='0 0 24 24' fill='white'>
-                  <polyline
-                    points='20 6 9 17 4 12'
-                    strokeWidth='3'
-                    stroke='white'
-                    fill='none'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                </svg>
+            {artist.verified && (
+              <div className='verified-badge'>
+                <div className='badge-icon'>
+                  <Verified color='white' size={18} />
+                </div>
+                <span className='badge-text'>Verified Artist</span>
               </div>
-              <span className='text-white/70 text-xs font-semibold'>Verified Artist</span>
-            </div>
-            <h1 className='text-white text-2xl font-extrabold leading-tight drop-shadow-lg'>{artist.name}</h1>
+            )}
+            <h1 className='hero-title'>{artist.name}</h1>
           </div>
         </div>
       </div>
 
-      {/* Stats + Actions */}
       <div className='stats-card-group'>
         <div className='stat-box'>
           <div className='value'>{/* artist.monthly || */ '—'}</div>
@@ -97,33 +84,24 @@ export const ArtistPage: React.FC = () => {
         </div>
       </div>
 
-      <div className='flex items-center justify-between'>
+      <div className='action-row'>
         <button
           onClick={() => setFollowed(!followed)}
-          className={`px-4 py-2 rounded-full text-xs font-bold border transition-all active:scale-95 ${
-            followed
-              ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] border-[var(--border-color)]'
-              : 'bg-[var(--color-brand)] text-white border-transparent'
-          }`}
+          className={`btn-follow ${followed ? 'following' : 'not-following'}`}
         >
           {followed ? 'Following' : 'Follow'}
         </button>
-        <button className='icon-button'>
-          <MoreHorizontal />
-        </button>
       </div>
 
-      {/* Play / Shuffle row */}
-      <div className='flex items-center gap-3'>
-        <button className='flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-[var(--color-brand)] text-white font-bold text-sm shadow-lg'>
+      <div className='play-shuffle-row'>
+        <button className='btn-primary'>
           <PlayIcon /> Play
         </button>
-        <button className='flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)]'>
+        <button className='btn-secondary'>
           <ShuffleIcon /> Shuffle
         </button>
       </div>
 
-      {/* Section tabs */}
       <div className='segmented-tab-switch'>
         {(['tracks', 'albums', 'about'] as const).map((s) => (
           <button key={s} onClick={() => setActiveSection(s)} className={activeSection === s ? 'active' : ''}>
@@ -132,10 +110,9 @@ export const ArtistPage: React.FC = () => {
         ))}
       </div>
 
-      <div className='space-y-6 pb-6'>
-        {/* Top Tracks */}
+      <div className='content-sections'>
         {activeSection === 'tracks' && artist.topTracks && (
-          <div className='space-y-1'>
+          <div className='track-list'>
             {artist.topTracks.map((t, i) => (
               <div key={t.name} className='song-list-item'>
                 <span className='index'>{i + 1}</span>
@@ -144,7 +121,6 @@ export const ArtistPage: React.FC = () => {
                 </div>
                 <div className='details'>
                   <p className='title'>{t.name}</p>
-                  <p className='meta'>{"t.plays"} plays</p>
                 </div>
                 <span className='duration'>{t.duration}</span>
                 <button
@@ -158,42 +134,35 @@ export const ArtistPage: React.FC = () => {
           </div>
         )}
 
-        {/* albums */}
         {activeSection === 'albums' && artist.albums && (
-          <div className='space-y-3'>
+          <div className='album-list'>
             {artist.albums.map((album) => (
               <div key={album.title} className='song-list-item'>
                 <div className='cover'>
-                  <img src={album.imgSuffix} alt={album.title} />
+                  <Image src={album.image} alt={album.title} />
                 </div>
                 <div className='details'>
                   <p className='title'>{album.title}</p>
                   <p className='meta'>Album · {album.year}</p>
                 </div>
-                <button className='icon-button bg-[var(--color-brand)] text-white'>
-                  <PlayIcon />
+                <button className='play-btn'>
+                  <PlayIcon color='var(--text-primary)' />
                 </button>
               </div>
             ))}
           </div>
         )}
 
-        {/* About */}
         {activeSection === 'about' && (
-          <div className='space-y-5'>
-            <div className='rounded-2xl overflow-hidden h-44'>
-              <img src={artist.image || ''} alt={artist.name} className='w-full h-full object-cover' />
-            </div>
-            <p className='text-sm leading-relaxed text-[var(--text-secondary)]'>
-              {artist.bio || 'No biography available for this artist.'}
-            </p>
+          <div className='about-section'>
+            <p className='about-text'>{artist.bio || 'No biography available for this artist.'}</p>
           </div>
         )}
 
-        {/* related artists */}
+        {/* Related Artists */}
         {artist.related && artist.related.length > 0 && (
-          <div>
-            <p className='text-sm font-extrabold mb-3 text-[var(--text-primary)]'>Fans also like</p>
+          <div className='related-section'>
+            <p className='section-title'>Fans also like</p>
             <div className='horizontal-scroll-list artists'>
               {artist.related.map((ra) => (
                 <button
@@ -202,7 +171,7 @@ export const ArtistPage: React.FC = () => {
                   className='artist-avatar-card'
                 >
                   <div className='avatar-ring'>
-                    <img src={ra.image || ''} alt={ra.name} />
+                    <Image src={ra.image || ''} alt={ra.name} />
                   </div>
                   <p className='artist-name'>{ra.name}</p>
                 </button>

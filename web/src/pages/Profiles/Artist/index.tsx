@@ -136,7 +136,7 @@ export const ArtistPage: React.FC = () => {
         {activeSection === 'albums' && artist.albums && (
           <div className='album-list'>
             {artist.albums.map((album) => (
-              <div key={album.id} className='song-list-item'>
+              <button key={album.id} onClick={() => navigate(`/album?albumId=${album.id}`)} className='song-list-item'>
                 <div className='cover'>
                   <Image src={album.image} alt={album.name} />
                 </div>
@@ -147,7 +147,7 @@ export const ArtistPage: React.FC = () => {
                 <button className='play-btn'>
                   <PlayIcon color='var(--text-primary)' />
                 </button>
-              </div>
+              </button>
             ))}
           </div>
         )}

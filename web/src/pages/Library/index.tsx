@@ -1,13 +1,14 @@
 import { HeartIcon, Library, MoreHorizontal, Music } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { fetchNui } from '../../utils/fetchNui';
-import { generateGradient } from '../../utils/utils';
+import { formatNumber, generateGradient } from '../../utils/utils';
 import { Image } from '../../components/ImageFallback';
 import type { ArtistBasic, PlaylistBasic } from '@common/types';
 import { MOCK_ARTISTS, MOCK_PLAYLISTS } from '../../mockdata';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export function LibraryPage() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [tab, setTab] = useState<'playlists' | 'artists'>('playlists');
   const [artists, setArtists] = useState<ArtistBasic[]>([]);
@@ -77,18 +78,20 @@ export function LibraryPage() {
       {tab === 'artists' && (
         <div>
           {artists.map((a) => (
-            <div key={a.id} className='song-list-item'>
-              <Image src={a.image} alt={a.name} className='cover' style={{ borderRadius: '50%' }} />
+            <button key={a.id} onClick={() => navigate(`/artist?artistId=${a.id}`)} className='song-list-item'>
+              <div className='cover'>
+                <Image src={a.image} alt={a.name} className='cover' style={{ borderRadius: '50%' }} />
+              </div>
               <div className='details'>
                 <p className='title'>{a.name}</p>
                 <p className='meta'>
-                  {a.genre} · {a.followers} followers
+                  {a.genre} · {formatNumber(a.followers)} followers
                 </p>
               </div>
               <button className='like-button liked'>
                 <HeartIcon />
               </button>
-            </div>
+            </button>
           ))}
         </div>
       )}

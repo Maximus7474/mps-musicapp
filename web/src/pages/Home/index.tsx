@@ -95,12 +95,12 @@ export function HomePage() {
         <SectionHeader title='Listening To' action='See all' onActionClick={() => navigate('/library?tab=artists')} />
         <div className='horizontal-scroll-list artists'>
           {recentArtists.map((a) => (
-            <div key={a.id} className='artist-avatar-card'>
+            <button key={a.id} onClick={() => navigate(`/artist?artistId=${a.id}`)} className='artist-avatar-card'>
               <div className='avatar-ring'>
                 <Image src={a.image} alt={a.name} />
               </div>
               <p className='artist-name'>{a.name}</p>
-            </div>
+            </button>
           ))}
         </div>
       </div>

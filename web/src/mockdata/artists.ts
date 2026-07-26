@@ -1,4 +1,5 @@
-import type { ArtistBasic } from '@common/types';
+import type { ArtistBasic, ArtistProfile } from '@common/types';
+import { MOCK_SONGS } from './songs';
 
 export const MOCK_ARTISTS: ArtistBasic[] = [
   {
@@ -37,3 +38,29 @@ export const MOCK_ARTISTS: ArtistBasic[] = [
     followers: 14200,
   },
 ];
+
+export const MOCK_ARTIST_PROFILE: ArtistProfile = {
+  id: 202,
+  name: 'DJ Cara',
+  verified: true,
+  image: '',
+  genre: 'Dance-Pop / Electronic',
+  followers: 840000,
+  bio: 'DJ Cara is the one and only DJ and host of Non-Stop Pop FM.',
+  topTracks: MOCK_SONGS.filter((s) => s.author.toLowerCase().includes('dj cara')),
+  albums: [
+    {
+      title: 'Non Stop FM Vol. 1',
+      year: '2013',
+      image: '',
+    },
+    {
+      title: 'Non Stop FM Vol. 2',
+      year: '2013',
+      image: '',
+    },
+  ],
+  related: MOCK_ARTISTS.filter((a) => a.id !== 202),
+};
+
+console.log(MOCK_ARTIST_PROFILE);

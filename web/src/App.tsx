@@ -4,7 +4,7 @@ import Frame from './components/dev/Frame';
 import { Routes, Route } from 'react-router-dom';
 import ThemeToggler from './components/dev/Theming';
 import { PageLayout } from './components/PageLayout';
-import { HomePage, LibraryPage, ProfilePage, SearchPage } from './pages';
+import { ArtistPage, HomePage, LibraryPage, ProfilePage, SearchPage } from './pages';
 
 import './styles/App.scss';
 import './pages/pages.scss';
@@ -31,6 +31,7 @@ const App = () => {
             <Route path='library' element={<LibraryPage />} />
             <Route path='profile' element={<ProfilePage />} />
             <Route path='search' element={<SearchPage />} />
+            <Route path='artist' element={<ArtistPage />} />
 
             {/* Redirect if accessing an unknown or unauthorised page */}
             <Route path='*' element={<Navigate to='/' replace />} />

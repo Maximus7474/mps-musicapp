@@ -26,6 +26,6 @@ export const formatTime = (timeInSeconds: number) => {
 
 export const formatNumber = (value: number): string => {
   if (value >= 1_000_000) return `${Math.floor(value / 1_000_000)}M`;
-  if (value >= 1_000) return `${Math.floor(value / 1_000_000)}k`;
+  if (value >= 1_000) return `${Math.floor(value / 1_000)}k`;
   return `${value}`;
 };

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Play, Pause, PlayOff, HeartIcon, ChevronDown } from 'lucide-react';
+import { Play, Pause, PlayOff, HeartIcon, ChevronDown, VolumeX, Volume2 } from 'lucide-react';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { formatTime } from '../utils/utils';
 import { fetchNui } from '../utils/fetchNui';
@@ -9,7 +9,7 @@ import { Image } from './ImageFallback';
 import './NowPlaying.scss';
 
 export const NowPlayingBar = () => {
-  const { currentSong, isPlaying, currentTime, duration, togglePlayPause, skipTo } = useAudioPlayer();
+  const { currentSong, isPlaying, currentTime, duration, togglePlayPause, skipTo, toggleMute,volume,setVolume } = useAudioPlayer();
 
   const [isLiked, setIsLiked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -40,6 +40,7 @@ export const NowPlayingBar = () => {
   const safeCurrentTime = currentTime ?? 0;
   const safeDuration = duration ?? 0;
   const progressPercent = safeDuration > 0 ? (safeCurrentTime / safeDuration) * 100 : 0;
+  const volumePercent = `${volume * 100}%`;
 
   if (isExpanded) {
     return (
@@ -84,6 +85,22 @@ export const NowPlayingBar = () => {
             <span>{formatTime(safeDuration)}</span>
           </div>
         </div>
+
+        <div className="fullscreen-volume">
+                  <button className="mute-btn" onClick={toggleMute}>
+                    {volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                  </button>
+                  <input
+                    type="range"
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    value={volume}
+                    onChange={(e) => setVolume(Number(e.target.value))}
+                    className="volume-slider"
+                    style={{ '--volume': volumePercent } as React.CSSProperties}
+                  />
+                </div>
 
         <div className='fullscreen-controls'>
           <button onClick={togglePlayPause} className='play-pause-btn large'>

@@ -11,6 +11,8 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [volume, setVolumeState] = useState<number>(1);
+  const [prevVolume, setPrevVolume] = useState<number>(1);
   const hasLoggedStream = useRef<boolean>(false);
 
   const playSong = (song: SongBasic) => {
@@ -44,35 +46,56 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   };
 
+  const setVolume = (newVolume: number) => {
+    const clamped = Math.max(0, Math.min(1, newVolume));
+    setVolumeState(clamped);
+    if (audioRef.current) {
+      audioRef.current.volume = clamped;
+    }
+  };
+
+  const toggleMute = () => {
+    if (volume > 0) {
+      setPrevVolume(volume);
+      setVolume(0);
+    } else {
+      setVolume(prevVolume > 0 ? prevVolume : 1);
+    }
+  };
+
+    const handleTimeUpdate = () => {
+      if (!audioRef.current) return;
+
+      const current = audioRef.current.currentTime;
+      const total = audioRef.current.duration;
+
+      setCurrentTime(current);
+
+      // Stream logging logic
+      if (total > 0 && !hasLoggedStream.current) {
+        const percentagePlayed = current / total;
+
+        if (percentagePlayed >= STREAM_LOG_THRESHOLD) {
+          hasLoggedStream.current = true;
+
+          fetchNui('musicapp:logstream', {
+            songId: currentSong?.id,
+          }).catch((err) => console.error('[AUDIO] Failed to log stream', err.message));
+        }
+      }
+    };
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, []);
+
   useEffect(() => {
     if (currentSong && audioRef.current) {
       audioRef.current.play().catch((err) => console.error('Playback failed:', err));
     }
   }, [currentSong]);
-
-  const handleTimeUpdate = () => {
-    if (!audioRef.current) return;
-
-    const current = audioRef.current.currentTime;
-    const total = audioRef.current.duration;
-
-    setCurrentTime(current);
-
-    // Stream logging logic
-    if (total > 0 && !hasLoggedStream.current) {
-      const percentagePlayed = current / total;
-
-      if (percentagePlayed >= STREAM_LOG_THRESHOLD) {
-        hasLoggedStream.current = true;
-
-        fetchNui('musicapp:logstream', {
-          songId: currentSong?.id,
-        }).catch((err) => console.error('[AUDIO] Failed to log stream', err.message));
-
-        console.log(`[Stream Logged] Song: ${currentSong?.name}`);
-      }
-    }
-  };
 
   return (
     <AudioContext.Provider
@@ -83,7 +106,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         duration,
         playSong,
         togglePlayPause,
-        skipTo,
+        skipTo, setVolume, toggleMute, volume,
       }}
     >
       {children}

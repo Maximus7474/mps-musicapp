@@ -8,4 +8,7 @@ export interface AudioContextType {
   playSong: (song: SongBasic) => void;
   togglePlayPause: () => void;
   skipTo: (time: number) => void;
+  volume: number;
+  setVolume: (volume: number) => void;
+  toggleMute: () => void;
 }

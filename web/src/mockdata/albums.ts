@@ -1,5 +1,5 @@
-import type { AlbumBasic } from "@common/types";
-import { MOCK_SONGS } from "./songs";
+import type { AlbumBasic } from '@common/types';
+import { MOCK_SONGS } from './songs';
 
 export const MOCK_ALBUMS: AlbumBasic[] = [
   {

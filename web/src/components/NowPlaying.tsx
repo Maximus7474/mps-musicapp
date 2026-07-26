@@ -115,13 +115,7 @@ export const NowPlayingBar = () => {
 
         <div className='fullscreen-controls'>
           <button onClick={togglePlayPause} className='play-pause-btn large'>
-            {hasErrored ? (
-              <CloudAlert size={32} />
-            ) : isPlaying ? (
-              <Pause size={32} />
-            ) : (
-              <Play size={32} />
-            )}
+            {hasErrored ? <CloudAlert size={32} /> : isPlaying ? <Pause size={32} /> : <Play size={32} />}
           </button>
         </div>
 

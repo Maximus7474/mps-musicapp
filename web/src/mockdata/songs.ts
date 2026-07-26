@@ -6,7 +6,7 @@ export const MOCK_SONGS: SongBasic[] = [
     name: 'Midnight City (LS Remix)',
     author: 'M83 ft. DJ Cara',
     liked: true,
-    url: 'https://example.com/audio/midnight-city.mp3',
+    url: 'https://r2.fivemanage.com/fwEa0a4lpWblPD4RLxiV9/audiocopper-dark-571483.mp3',
     image: '',
     duration: 243,
   },

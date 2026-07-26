@@ -40,9 +40,11 @@ export type AlbumBasic = {
   name: string;
   year: string;
   image?: string;
-  author: {
-    id: ArtistBasic['id'];
-    name: ArtistBasic['name'];
-  } | 'various_artists';
+  author:
+    | {
+        id: ArtistBasic['id'];
+        name: ArtistBasic['name'];
+      }
+    | 'various_artists';
   tracks: SongBasic[];
 };

@@ -6,7 +6,7 @@ import { Image } from '../../components/ImageFallback';
 import type { ArtistBasic, BasicResponse, PlaylistBasic, SongBasic } from '@common/types';
 import { MOCK_SONGS, MOCK_ARTISTS, MOCK_PLAYLISTS } from '../../mockdata/index';
 import { useNavigate } from 'react-router-dom';
-import { useAudioPlayer } from '../../hooks/useAudio';
+import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 
 export function HomePage() {
   const navigate = useNavigate();

@@ -2,11 +2,10 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchNui } from '../../utils/fetchNui';
 import type { ArtistProfile } from '@common/types';
-import { ChevronLeft, HeartIcon, MoreHorizontal, PlayIcon, ShareIcon, ShuffleIcon, Verified } from 'lucide-react';
+import { ChevronLeft, HeartIcon, PlayIcon, ShareIcon, ShuffleIcon, Verified } from 'lucide-react';
 import { MOCK_ARTIST_PROFILE } from '../../mockdata';
 import { Image } from '../../components/ImageFallback';
-
-// import "../styles/artist.scss";
+import { formatNumber } from '../../utils/utils';
 
 export const ArtistPage: React.FC = () => {
   const navigate = useNavigate();
@@ -75,7 +74,7 @@ export const ArtistPage: React.FC = () => {
           <div className='label'>Monthly listeners</div>
         </div>
         <div className='stat-box'>
-          <div className='value'>{artist.followers ?? '—'}</div>
+          <div className='value'>{artist.followers ? formatNumber(artist.followers) : '—'}</div>
           <div className='label'>Followers</div>
         </div>
         <div className='stat-box'>
@@ -137,12 +136,12 @@ export const ArtistPage: React.FC = () => {
         {activeSection === 'albums' && artist.albums && (
           <div className='album-list'>
             {artist.albums.map((album) => (
-              <div key={album.title} className='song-list-item'>
+              <div key={album.id} className='song-list-item'>
                 <div className='cover'>
-                  <Image src={album.image} alt={album.title} />
+                  <Image src={album.image} alt={album.name} />
                 </div>
                 <div className='details'>
-                  <p className='title'>{album.title}</p>
+                  <p className='title'>{album.name}</p>
                   <p className='meta'>Album · {album.year}</p>
                 </div>
                 <button className='play-btn'>

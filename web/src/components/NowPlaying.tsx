@@ -1,24 +1,29 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { HeartIcon, Pause, Play, PlayOff } from 'lucide-react';
 import { fetchNui } from '../utils/fetchNui';
 import { Image } from './ImageFallback';
-import { useNuiEvent } from '../hooks/useNuiEvent';
+import { useAudioPlayer } from '../hooks/useAudio';
 
-import type { BasicResponse, SongBasic } from '@common/types';
+import type { BasicResponse } from '@common/types';
 
 import './NowPlaying.scss';
 
 export const NowPlayingBar = () => {
-  const [song, setSong] = useState<SongBasic | null>(null);
-  const [playing, setPlaying] = useState(true);
+  const { currentSong, isPlaying, currentTime, duration, togglePlayPause } = useAudioPlayer();
+  const [isLiked, setIsLiked] = useState(false);
 
-  const likeSong = async (id: SongBasic['id'], state: SongBasic['liked']) => {
-    if (!song) return;
+  const likeSong = async () => {
+    if (!currentSong) return;
+    const newState = currentSong.liked;
 
-    const result = await fetchNui<BasicResponse>('musicapp:likesong', { id, state }, { success: true });
+    const result = await fetchNui<BasicResponse>(
+      'musicapp:likesong',
+      { id: currentSong.id, state: newState },
+      { success: true },
+    );
 
     if (result.success) {
-      setSong((prev) => ({ ...prev!, liked: state }));
+      setIsLiked(newState);
     } else {
       sendNotification({
         title: 'Unable to like song',
@@ -27,41 +32,44 @@ export const NowPlayingBar = () => {
     }
   };
 
-  useNuiEvent<{ song: SongBasic | null; play?: boolean }>('musicapp:setplaying', ({ song, play = null }) => {
-    setSong(song);
-    if (typeof play === 'boolean') setPlaying(play);
-  });
+  useEffect(() => {
+    setIsLiked(currentSong?.liked ?? false);
+  }, [currentSong]);
+
+  const safeCurrentTime = currentTime ?? 0;
+  const safeDuration = duration ?? 0;
+  const progressPercent = safeDuration > 0 ? (safeCurrentTime / safeDuration) * 100 : 0;
 
   return (
-    <div className={`now-playing-bar ${!song ? 'is-empty' : ''}`}>
-      {song && <Image src={song.image} alt={song.name} className='album-art' fallbackLabel='' />}
+    <div className={`now-playing-bar ${!currentSong ? 'is-empty' : ''}`}>
+      {currentSong && <Image src={currentSong.image} alt={currentSong.name} className='album-art' fallbackLabel='' />}
 
       <div className='track-info'>
-        <p className='track-title'>{song ? song.name : 'Nothing playing'}</p>
-        <p className='artist-name'>{song ? song.author : 'Select a song to start'}</p>
+        <p className='track-title'>{currentSong ? currentSong.name : 'Nothing playing'}</p>
+        <p className='artist-name'>{currentSong ? currentSong.author : 'Select a song to start'}</p>
 
         <div className='progress-bar-container'>
-          <div className='progress-bar-fill' style={{ width: song ? undefined : '0%' }} />
+          <div className='progress-bar-fill' style={{ width: currentSong ? `${progressPercent}%` : '0%' }} />
         </div>
       </div>
 
       <div className='bar-actions'>
         <button
-          onClick={() => setPlaying(!playing)}
-          disabled={!song}
+          onClick={togglePlayPause}
+          disabled={!currentSong}
           className='play-pause-btn'
-          aria-label={playing ? 'Pause' : 'Play'}
+          aria-label={isPlaying ? 'Pause' : 'Play'}
         >
-          {song ? playing ? <Pause size={16} /> : <Play size={16} /> : <PlayOff size={16} />}
+          {currentSong ? isPlaying ? <Pause size={16} /> : <Play size={16} /> : <PlayOff size={16} />}
         </button>
 
         <button
-          onClick={() => song && likeSong(song.id, song.liked)}
-          disabled={!song}
-          className={`like-btn ${song?.liked ? 'liked' : ''}`}
+          onClick={() => currentSong && likeSong()}
+          disabled={!currentSong}
+          className={`like-btn ${isLiked ? 'liked' : ''}`}
           aria-label='Like track'
         >
-          <HeartIcon size={20} fill={song?.liked ? 'currentColor' : 'none'} />
+          <HeartIcon size={20} fill={isLiked ? 'currentColor' : 'none'} />
         </button>
       </div>
     </div>

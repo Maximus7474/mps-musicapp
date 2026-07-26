@@ -24,7 +24,7 @@ export type ArtistProfile = ArtistBasic & {
   bio?: string;
   topTracks?: SongBasic[];
   // ToDo: create an album system
-  albums?: { title: string; year: string; image: string }[];
+  albums?: AlbumBasic[];
   related?: ArtistBasic[];
 };
 
@@ -33,4 +33,16 @@ export type PlaylistBasic = {
   title: string;
   tracks: number;
   image?: string;
+};
+
+export type AlbumBasic = {
+  id: string;
+  name: string;
+  year: string;
+  image?: string;
+  author: {
+    id: ArtistBasic['id'];
+    name: ArtistBasic['name'];
+  } | 'various_artists';
+  tracks: SongBasic[];
 };

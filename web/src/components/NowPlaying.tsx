@@ -1,47 +1,104 @@
-import { useEffect, useState } from 'react';
-import { HeartIcon, Pause, Play, PlayOff } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Play, Pause, PlayOff, HeartIcon, ChevronDown } from 'lucide-react';
+import { useAudioPlayer } from '../hooks/useAudioPlayer';
+import { formatTime } from '../utils/utils';
 import { fetchNui } from '../utils/fetchNui';
+import type { BasicResponse, SongBasic } from '@common/types';
 import { Image } from './ImageFallback';
-import { useAudioPlayer } from '../hooks/useAudio';
-
-import type { BasicResponse } from '@common/types';
 
 import './NowPlaying.scss';
 
 export const NowPlayingBar = () => {
-  const { currentSong, isPlaying, currentTime, duration, togglePlayPause } = useAudioPlayer();
+  const { currentSong, isPlaying, currentTime, duration, togglePlayPause, skipTo } = useAudioPlayer();
+
   const [isLiked, setIsLiked] = useState(false);
-
-  const likeSong = async () => {
-    if (!currentSong) return;
-    const newState = currentSong.liked;
-
-    const result = await fetchNui<BasicResponse>(
-      'musicapp:likesong',
-      { id: currentSong.id, state: newState },
-      { success: true },
-    );
-
-    if (result.success) {
-      setIsLiked(newState);
-    } else {
-      sendNotification({
-        title: 'Unable to like song',
-        content: result.message,
-      });
-    }
-  };
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     setIsLiked(currentSong?.liked ?? false);
   }, [currentSong]);
 
+  useEffect(() => {
+    if (!currentSong) setIsExpanded(false);
+  }, [currentSong]);
+
+  const likeSong = async (id: SongBasic['id'], newState: boolean) => {
+    if (!currentSong) return;
+    const result = await fetchNui<BasicResponse>('musicapp:likesong', { id, state: newState }, { success: true });
+    if (result.success) {
+      setIsLiked(newState);
+    } else {
+      sendNotification({ title: 'Unable to like song', content: result.message });
+    }
+  };
+
+  const handleActionClick = (e: React.MouseEvent, action: () => void) => {
+    e.stopPropagation();
+    action();
+  };
+
   const safeCurrentTime = currentTime ?? 0;
   const safeDuration = duration ?? 0;
   const progressPercent = safeDuration > 0 ? (safeCurrentTime / safeDuration) * 100 : 0;
 
+  if (isExpanded) {
+    return (
+      <div className='now-playing-fullscreen'>
+        <div className='fullscreen-header'>
+          <button className='close-btn' onClick={() => setIsExpanded(false)}>
+            <ChevronDown size={28} />
+          </button>
+          <span>Now Playing</span>
+          <div style={{ width: 28 }} />
+        </div>
+
+        <div className='fullscreen-art'>
+          <Image src={currentSong?.image} alt={currentSong?.name} className='large-cover' fallbackLabel='' />
+        </div>
+
+        <div className='fullscreen-info'>
+          <div className='text-wrapper'>
+            <h2 className='title'>{currentSong?.name}</h2>
+            <p className='artist'>{currentSong?.author}</p>
+          </div>
+          <button
+            onClick={() => currentSong && likeSong(currentSong.id, !isLiked)}
+            className={`fullscreen-like ${isLiked ? 'liked' : ''}`}
+          >
+            <HeartIcon size={28} fill={isLiked ? 'currentColor' : 'none'} />
+          </button>
+        </div>
+
+        <div className='fullscreen-progress'>
+          <input
+            type='range'
+            min={0}
+            max={safeDuration || 100}
+            value={safeCurrentTime}
+            onChange={(e) => skipTo(Number(e.target.value))}
+            className='scrubber'
+            style={{ '--progress': `${progressPercent}%` } as React.CSSProperties}
+          />
+          <div className='time-labels'>
+            <span>{formatTime(safeCurrentTime)}</span>
+            <span>{formatTime(safeDuration)}</span>
+          </div>
+        </div>
+
+        <div className='fullscreen-controls'>
+          <button onClick={togglePlayPause} className='play-pause-btn large'>
+            {isPlaying ? <Pause size={32} /> : <Play size={32} fill='currentColor' />}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className={`now-playing-bar ${!currentSong ? 'is-empty' : ''}`}>
+    <div
+      className={`now-playing-bar ${!currentSong ? 'is-empty' : ''}`}
+      onClick={() => currentSong && setIsExpanded(true)}
+    >
       {currentSong && <Image src={currentSong.image} alt={currentSong.name} className='album-art' fallbackLabel='' />}
 
       <div className='track-info'>
@@ -55,7 +112,7 @@ export const NowPlayingBar = () => {
 
       <div className='bar-actions'>
         <button
-          onClick={togglePlayPause}
+          onClick={(e) => handleActionClick(e, togglePlayPause)}
           disabled={!currentSong}
           className='play-pause-btn'
           aria-label={isPlaying ? 'Pause' : 'Play'}
@@ -64,7 +121,7 @@ export const NowPlayingBar = () => {
         </button>
 
         <button
-          onClick={() => currentSong && likeSong()}
+          onClick={(e) => handleActionClick(e, () => currentSong && likeSong(currentSong.id, !isLiked))}
           disabled={!currentSong}
           className={`like-btn ${isLiked ? 'liked' : ''}`}
           aria-label='Like track'

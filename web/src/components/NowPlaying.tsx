@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Play, Pause, PlayOff, HeartIcon, ChevronDown, VolumeX, Volume2 } from 'lucide-react';
+import { Play, Pause, PlayOff, HeartIcon, ChevronDown, VolumeX, Volume2, CloudAlert } from 'lucide-react';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { formatTime } from '../utils/utils';
 import { fetchNui } from '../utils/fetchNui';
@@ -9,8 +9,18 @@ import { Image } from './ImageFallback';
 import './NowPlaying.scss';
 
 export const NowPlayingBar = () => {
-  const { currentSong, isPlaying, currentTime, duration, togglePlayPause, skipTo, toggleMute, volume, setVolume } =
-    useAudioPlayer();
+  const {
+    currentSong,
+    isPlaying,
+    currentTime,
+    duration,
+    togglePlayPause,
+    skipTo,
+    toggleMute,
+    volume,
+    setVolume,
+    hasErrored,
+  } = useAudioPlayer();
 
   const [isLiked, setIsLiked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -105,9 +115,17 @@ export const NowPlayingBar = () => {
 
         <div className='fullscreen-controls'>
           <button onClick={togglePlayPause} className='play-pause-btn large'>
-            {isPlaying ? <Pause size={32} /> : <Play size={32} fill='currentColor' />}
+            {hasErrored ? (
+              <CloudAlert size={32} />
+            ) : isPlaying ? (
+              <Pause size={32} />
+            ) : (
+              <Play size={32} />
+            )}
           </button>
         </div>
+
+        {hasErrored && <p className='playback-error'>An error occured when initiating playback of the song.</p>}
       </div>
     );
   }
@@ -131,16 +149,24 @@ export const NowPlayingBar = () => {
       <div className='bar-actions'>
         <button
           onClick={(e) => handleActionClick(e, togglePlayPause)}
-          disabled={!currentSong}
+          disabled={!currentSong || hasErrored}
           className='play-pause-btn'
           aria-label={isPlaying ? 'Pause' : 'Play'}
         >
-          {currentSong ? isPlaying ? <Pause size={16} /> : <Play size={16} /> : <PlayOff size={16} />}
+          {!currentSong ? (
+            <PlayOff size={16} />
+          ) : hasErrored ? (
+            <CloudAlert size={16} />
+          ) : isPlaying ? (
+            <Pause size={16} />
+          ) : (
+            <Play size={16} />
+          )}
         </button>
 
         <button
           onClick={(e) => handleActionClick(e, () => currentSong && likeSong(currentSong.id, !isLiked))}
-          disabled={!currentSong}
+          disabled={!currentSong || hasErrored}
           className={`like-btn ${isLiked ? 'liked' : ''}`}
           aria-label='Like track'
         >

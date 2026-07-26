@@ -17,3 +17,15 @@ export const generateGradient = (id: number | string): string => {
 
   return GRADIENT_PALETTES[Math.abs(index)];
 };
+
+export const formatTime = (timeInSeconds: number) => {
+  const minutes = Math.floor(timeInSeconds / 60);
+  const seconds = Math.floor(timeInSeconds % 60);
+  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+};
+
+export const formatNumber = (value: number): string => {
+  if (value >= 1_000_000) return `${Math.floor(value / 1_000_000)}M`;
+  if (value >= 1_000) return `${Math.floor(value / 1_000_000)}k`;
+  return `${value}`;
+};

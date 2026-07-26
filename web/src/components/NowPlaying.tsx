@@ -9,7 +9,8 @@ import { Image } from './ImageFallback';
 import './NowPlaying.scss';
 
 export const NowPlayingBar = () => {
-  const { currentSong, isPlaying, currentTime, duration, togglePlayPause, skipTo, toggleMute,volume,setVolume } = useAudioPlayer();
+  const { currentSong, isPlaying, currentTime, duration, togglePlayPause, skipTo, toggleMute, volume, setVolume } =
+    useAudioPlayer();
 
   const [isLiked, setIsLiked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -86,21 +87,21 @@ export const NowPlayingBar = () => {
           </div>
         </div>
 
-        <div className="fullscreen-volume">
-                  <button className="mute-btn" onClick={toggleMute}>
-                    {volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                  </button>
-                  <input
-                    type="range"
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    value={volume}
-                    onChange={(e) => setVolume(Number(e.target.value))}
-                    className="volume-slider"
-                    style={{ '--volume': volumePercent } as React.CSSProperties}
-                  />
-                </div>
+        <div className='fullscreen-volume'>
+          <button className='mute-btn' onClick={toggleMute}>
+            {volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
+          </button>
+          <input
+            type='range'
+            min={0}
+            max={1}
+            step={0.01}
+            value={volume}
+            onChange={(e) => setVolume(Number(e.target.value))}
+            className='volume-slider'
+            style={{ '--volume': volumePercent } as React.CSSProperties}
+          />
+        </div>
 
         <div className='fullscreen-controls'>
           <button onClick={togglePlayPause} className='play-pause-btn large'>

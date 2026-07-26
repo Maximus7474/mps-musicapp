@@ -63,27 +63,27 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   };
 
-    const handleTimeUpdate = () => {
-      if (!audioRef.current) return;
+  const handleTimeUpdate = () => {
+    if (!audioRef.current) return;
 
-      const current = audioRef.current.currentTime;
-      const total = audioRef.current.duration;
+    const current = audioRef.current.currentTime;
+    const total = audioRef.current.duration;
 
-      setCurrentTime(current);
+    setCurrentTime(current);
 
-      // Stream logging logic
-      if (total > 0 && !hasLoggedStream.current) {
-        const percentagePlayed = current / total;
+    // Stream logging logic
+    if (total > 0 && !hasLoggedStream.current) {
+      const percentagePlayed = current / total;
 
-        if (percentagePlayed >= STREAM_LOG_THRESHOLD) {
-          hasLoggedStream.current = true;
+      if (percentagePlayed >= STREAM_LOG_THRESHOLD) {
+        hasLoggedStream.current = true;
 
-          fetchNui('musicapp:logstream', {
-            songId: currentSong?.id,
-          }).catch((err) => console.error('[AUDIO] Failed to log stream', err.message));
-        }
+        fetchNui('musicapp:logstream', {
+          songId: currentSong?.id,
+        }).catch((err) => console.error('[AUDIO] Failed to log stream', err.message));
       }
-    };
+    }
+  };
 
   useEffect(() => {
     if (audioRef.current) {
@@ -106,7 +106,10 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         duration,
         playSong,
         togglePlayPause,
-        skipTo, setVolume, toggleMute, volume,
+        skipTo,
+        setVolume,
+        toggleMute,
+        volume,
       }}
     >
       {children}

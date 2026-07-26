@@ -1,12 +1,12 @@
 import { HeartIcon, HeartPlusIcon, Play, PlayIcon, UserCircle2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { SectionHeader } from '../../components/SectionHeader';
-import { fetchNui } from '../../utils/fetchNui';
-import { Image } from '../../components/ImageFallback';
+import { SectionHeader } from '~/components/SectionHeader';
+import { fetchNui } from '~/utils/fetchNui';
+import { Image } from '~/components/ImageFallback';
 import type { ArtistBasic, BasicResponse, PlaylistBasic, SongBasic } from '@common/types';
-import { MOCK_SONGS, MOCK_ARTISTS, MOCK_PLAYLISTS } from '../../mockdata/index';
+import { MOCK_SONGS, MOCK_ARTISTS, MOCK_PLAYLISTS } from '~/mockdata/index';
 import { useNavigate } from 'react-router-dom';
-import { useAudioPlayer } from '../../hooks/useAudioPlayer';
+import { useAudioPlayer } from '~/hooks/useAudioPlayer';
 
 export function HomePage() {
   const navigate = useNavigate();

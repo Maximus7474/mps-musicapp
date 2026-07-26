@@ -1,6 +1,6 @@
 import { SearchIcon } from 'lucide-react';
 import { useState } from 'react';
-import { SectionHeader } from '../../components/SectionHeader';
+import { SectionHeader } from '~/components/SectionHeader';
 
 export function SearchPage() {
   const [query, setQuery] = useState('');

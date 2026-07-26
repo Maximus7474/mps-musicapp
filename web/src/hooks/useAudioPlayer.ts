@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import type { AudioContextType } from '../types';
+import type { AudioContextType } from '~/types';
 
 export const AudioContext = createContext<AudioContextType | undefined>(undefined);
 

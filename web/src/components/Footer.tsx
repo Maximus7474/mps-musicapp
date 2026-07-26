@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Library, Search, User } from 'lucide-react';
-import type { NavItem } from '../types';
+import type { NavItem } from '~/types';
 
 import './Footer.scss';
 

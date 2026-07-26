@@ -1,10 +1,10 @@
 import { HeartIcon, Library, MoreHorizontal, Music } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { fetchNui } from '../../utils/fetchNui';
-import { formatNumber, generateGradient } from '../../utils/utils';
-import { Image } from '../../components/ImageFallback';
+import { fetchNui } from '~/utils/fetchNui';
+import { formatNumber, generateGradient } from '~/utils/utils';
+import { Image } from '~/components/ImageFallback';
 import type { ArtistBasic, PlaylistBasic } from '@common/types';
-import { MOCK_ARTISTS, MOCK_PLAYLISTS } from '../../mockdata';
+import { MOCK_ARTISTS, MOCK_PLAYLISTS } from '~/mockdata';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export function LibraryPage() {

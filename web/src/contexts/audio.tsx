@@ -1,6 +1,6 @@
 import type { SongBasic } from '@common/types';
 import React, { useRef, useState, useEffect, type ReactNode } from 'react';
-import { AudioContext } from '../hooks/useAudioPlayer';
+import { AudioContext } from '~/hooks/useAudioPlayer';
 
 /** The percentage of the track that must be played to register a "stream" */
 const STREAM_LOG_THRESHOLD = 0.6; // 50%

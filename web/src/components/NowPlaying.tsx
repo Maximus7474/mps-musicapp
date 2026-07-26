@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Play, Pause, PlayOff, HeartIcon, ChevronDown, VolumeX, Volume2, CloudAlert } from 'lucide-react';
-import { useAudioPlayer } from '../hooks/useAudioPlayer';
-import { formatTime } from '../utils/utils';
-import { fetchNui } from '../utils/fetchNui';
+import { useAudioPlayer } from '~/hooks/useAudioPlayer';
+import { formatTime } from '~/utils/utils';
+import { fetchNui } from '~/utils/fetchNui';
 import type { BasicResponse, SongBasic } from '@common/types';
 import { Image } from './ImageFallback';
 

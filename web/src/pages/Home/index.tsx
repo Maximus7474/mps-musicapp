@@ -1,4 +1,4 @@
-import { HeartIcon, HeartPlusIcon, PlayIcon, UserCircle2 } from 'lucide-react';
+import { HeartIcon, HeartPlusIcon, Play, PlayIcon, UserCircle2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SectionHeader } from '../../components/SectionHeader';
 import { fetchNui } from '../../utils/fetchNui';
@@ -6,9 +6,11 @@ import { Image } from '../../components/ImageFallback';
 import type { ArtistBasic, BasicResponse, PlaylistBasic, SongBasic } from '@common/types';
 import { MOCK_SONGS, MOCK_ARTISTS, MOCK_PLAYLISTS } from '../../mockdata/index';
 import { useNavigate } from 'react-router-dom';
+import { useAudioPlayer } from '../../hooks/useAudio';
 
 export function HomePage() {
   const navigate = useNavigate();
+  const audioPlayer = useAudioPlayer();
   const [latestSongs, setLatestSongs] = useState<SongBasic[]>([]);
   const [recentArtists, setRecentArtists] = useState<ArtistBasic[]>([]);
   const [recentPlaylists, setRecentPlaylists] = useState<PlaylistBasic[]>([]);
@@ -110,7 +112,12 @@ export function HomePage() {
           {latestSongs.map((s, i) => (
             <div key={s.id} className='song-list-item'>
               <span className='index'>{i + 1}</span>
-              <Image src={s.image} alt={s.name} className='cover' />
+              <button className='cover-button' onClick={() => audioPlayer.playSong(s)}>
+                <Image src={s.image} alt={s.name} className='cover' />
+                <div className='play-overlay'>
+                  <Play size={18} fill='currentColor' />
+                </div>
+              </button>
               <div className='details'>
                 <p className='title'>{s.name}</p>
                 <p className='meta'>{s.author}</p>

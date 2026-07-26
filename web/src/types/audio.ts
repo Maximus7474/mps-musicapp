@@ -11,4 +11,5 @@ export interface AudioContextType {
   volume: number;
   setVolume: (volume: number) => void;
   toggleMute: () => void;
+  hasErrored: boolean;
 }

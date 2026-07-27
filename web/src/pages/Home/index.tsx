@@ -7,6 +7,7 @@ import type { ArtistBasic, BasicResponse, PlaylistBasic, SongBasic } from '@comm
 import { MOCK_SONGS, MOCK_ARTISTS, MOCK_PLAYLISTS } from '~/mockdata/index';
 import { useNavigate } from 'react-router-dom';
 import { useAudioPlayer } from '~/hooks/useAudioPlayer';
+import { useSongLike } from '~/hooks/useSongLike';
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -15,25 +16,9 @@ export function HomePage() {
   const [recentArtists, setRecentArtists] = useState<ArtistBasic[]>([]);
   const [recentPlaylists, setRecentPlaylists] = useState<PlaylistBasic[]>([]);
 
-  const likeSong = async (id: SongBasic['id'], state: SongBasic['liked']) => {
-    const idx = latestSongs.findIndex((s) => s.id === id);
-    if (idx === -1) return;
-
-    const result = await fetchNui<BasicResponse>('musicapp:likesong', { id, state }, { success: true });
-
-    if (result.success) {
-      setLatestSongs((prev) => {
-        const list = [...prev];
-        list[idx] = { ...list[idx], liked: state };
-        return list;
-      });
-    } else {
-      sendNotification({
-        title: 'Unable to like song',
-        content: result.message,
-      });
-    }
-  };
+  const { toggleLike } = useSongLike((songId, liked) => {
+    setLatestSongs((prev) => prev.map((song) => (song.id === songId ? { ...song, liked } : song)));
+  });
 
   useEffect(() => {
     fetchNui<{
@@ -123,7 +108,7 @@ export function HomePage() {
                 <p className='meta'>{s.author}</p>
               </div>
               <p className='duration'>{s.duration}</p>
-              <button onClick={() => likeSong(s.id, !s.liked)} className={`like-button ${s.liked ? 'liked' : ''}`}>
+              <button onClick={() => toggleLike(s.id, s.liked)} className={`like-button ${s.liked ? 'liked' : ''}`}>
                 {s.liked ? <HeartIcon /> : <HeartPlusIcon />}
               </button>
             </div>

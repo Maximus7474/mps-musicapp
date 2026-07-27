@@ -11,6 +11,11 @@ export type SongBasic = {
   duration?: number;
 };
 
+export type SongLikedPayload = {
+  id: SongBasic['id'];
+  liked: boolean;
+};
+
 export type ArtistBasic = {
   id: number;
   name: string;

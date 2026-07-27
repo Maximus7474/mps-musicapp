@@ -7,6 +7,7 @@ import type { BasicResponse, SongBasic } from '@common/types';
 import { Image } from './ImageFallback';
 
 import './NowPlaying.scss';
+import { useSongLike } from '~/hooks/useSongLike';
 
 export const NowPlayingBar = () => {
   const {
@@ -29,18 +30,20 @@ export const NowPlayingBar = () => {
     setIsLiked(currentSong?.liked ?? false);
   }, [currentSong]);
 
+  const { toggleLike } = useSongLike((songId, liked) => {
+    if (currentSong && currentSong.id === songId) {
+      setIsLiked(liked);
+      currentSong.liked = liked;
+    }
+  });
+
   useEffect(() => {
     if (!currentSong) setIsExpanded(false);
   }, [currentSong]);
 
-  const likeSong = async (id: SongBasic['id'], newState: boolean) => {
+  const likeSong = () => {
     if (!currentSong) return;
-    const result = await fetchNui<BasicResponse>('musicapp:likesong', { id, state: newState }, { success: true });
-    if (result.success) {
-      setIsLiked(newState);
-    } else {
-      sendNotification({ title: 'Unable to like song', content: result.message });
-    }
+    toggleLike(currentSong.id, isLiked);
   };
 
   const handleActionClick = (e: React.MouseEvent, action: () => void) => {
@@ -74,7 +77,7 @@ export const NowPlayingBar = () => {
             <p className='artist'>{currentSong?.author}</p>
           </div>
           <button
-            onClick={() => currentSong && likeSong(currentSong.id, !isLiked)}
+            onClick={(e) => handleActionClick(e, likeSong)}
             className={`fullscreen-like ${isLiked ? 'liked' : ''}`}
           >
             <HeartIcon size={28} fill={isLiked ? 'currentColor' : 'none'} />
@@ -159,7 +162,7 @@ export const NowPlayingBar = () => {
         </button>
 
         <button
-          onClick={(e) => handleActionClick(e, () => currentSong && likeSong(currentSong.id, !isLiked))}
+          onClick={(e) => handleActionClick(e, likeSong)}
           disabled={!currentSong || hasErrored}
           className={`like-btn ${isLiked ? 'liked' : ''}`}
           aria-label='Like track'

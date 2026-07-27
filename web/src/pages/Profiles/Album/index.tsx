@@ -9,7 +9,7 @@ import { formatTime } from '~/utils/utils';
 import { useAudioPlayer } from '~/hooks/useAudioPlayer';
 
 export const AlbumPage: React.FC = () => {
-  const { playSong } = useAudioPlayer()
+  const { playSong } = useAudioPlayer();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const albumId = searchParams.get('albumId');

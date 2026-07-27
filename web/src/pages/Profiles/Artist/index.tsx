@@ -6,6 +6,7 @@ import { ChevronLeft, HeartIcon, PlayIcon, ShareIcon, ShuffleIcon, Verified } fr
 import { MOCK_ARTIST_PROFILE } from '~/mockdata';
 import { Image } from '~/components/ImageFallback';
 import { formatNumber } from '~/utils/utils';
+import { useSongLike } from '~/hooks/useSongLike';
 
 export const ArtistPage: React.FC = () => {
   const navigate = useNavigate();
@@ -14,9 +15,26 @@ export const ArtistPage: React.FC = () => {
 
   const [artist, setArtist] = useState<ArtistProfile | null>(null);
   const [followed, setFollowed] = useState(false);
-  const [likedTrack, setLikedTrack] = useState<number | null>(null);
   const [activeSection, setActiveSection] = useState<'tracks' | 'albums' | 'about'>('tracks');
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const { toggleLike } = useSongLike((songId, liked) => {
+    setArtist((prev) => {
+      if (!prev) return null;
+
+      return {
+        ...prev,
+        topTracks: prev.topTracks
+          ? prev.topTracks.map((song) => (song.id === songId ? { ...song, liked } : song))
+          : undefined,
+      };
+    });
+  });
+
+  const handleActionClick = (e: React.MouseEvent, action: () => void) => {
+    e.stopPropagation();
+    action();
+  };
 
   useEffect(() => {
     async function loadArtist() {
@@ -123,10 +141,10 @@ export const ArtistPage: React.FC = () => {
                 </div>
                 <span className='duration'>{t.duration}</span>
                 <button
-                  onClick={() => setLikedTrack(likedTrack === i ? null : i)}
-                  className={`like-button ${likedTrack === i ? 'liked' : ''}`}
+                  onClick={(e) => handleActionClick(e, () => toggleLike(t.id, t.liked))}
+                  className={`like-button ${t.liked ? 'liked' : ''}`}
                 >
-                  <HeartIcon fill={likedTrack === i ? 'currentColor' : 'transparent'} />
+                  <HeartIcon fill={t.liked ? 'currentColor' : 'transparent'} />
                 </button>
               </div>
             ))}

@@ -7,6 +7,7 @@ import { MOCK_ALBUMS } from '~/mockdata';
 import { Image } from '~/components/ImageFallback';
 import { formatTime } from '~/utils/utils';
 import { useAudioPlayer } from '~/hooks/useAudioPlayer';
+import { useSongLike } from '~/hooks/useSongLike';
 
 export const AlbumPage: React.FC = () => {
   const { playSong } = useAudioPlayer();
@@ -16,8 +17,23 @@ export const AlbumPage: React.FC = () => {
 
   const [album, setAlbum] = useState<AlbumBasic | null>(null);
   const [isSaved, setIsSaved] = useState(false);
-  const [likedTrack, setLikedTrack] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const { toggleLike } = useSongLike((songId, liked) => {
+    setAlbum((prev) => {
+      if (!prev) return null;
+
+      return {
+        ...prev,
+        tracks: prev.tracks.map((song) => (song.id === songId ? { ...song, liked } : song)),
+      };
+    });
+  });
+
+  const handleActionClick = (e: React.MouseEvent, action: () => void) => {
+    e.stopPropagation();
+    action();
+  };
 
   useEffect(() => {
     async function loadAlbum() {
@@ -139,10 +155,10 @@ export const AlbumPage: React.FC = () => {
                 </div>
                 <span className='duration'>{t.duration ? formatTime(t.duration) : '—'}</span>
                 <button
-                  onClick={() => setLikedTrack(likedTrack === i ? null : i)}
-                  className={`like-button ${likedTrack === i ? 'liked' : ''}`}
+                  onClick={(e) => handleActionClick(e, () => toggleLike(t.id, t.liked))}
+                  className={`like-button ${t.liked ? 'liked' : ''}`}
                 >
-                  <HeartIcon fill={likedTrack === i ? 'currentColor' : 'transparent'} />
+                  <HeartIcon fill={t.liked ? 'currentColor' : 'transparent'} />
                 </button>
               </button>
             ))}

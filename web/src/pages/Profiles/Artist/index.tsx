@@ -7,12 +7,14 @@ import { MOCK_ARTIST_PROFILE } from '~/mockdata';
 import { Image } from '~/components/ImageFallback';
 import { formatNumber } from '~/utils/utils';
 import { useSongLike } from '~/hooks/useSongLike';
+import { LoadingPage, NotFoundPage } from '~/components/StatusPages';
 
 export const ArtistPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const artistId = searchParams.get('artistId');
 
+  const [loading, setLoading] = useState<boolean>(true);
   const [artist, setArtist] = useState<ArtistProfile | null>(null);
   const [followed, setFollowed] = useState(false);
   const [activeSection, setActiveSection] = useState<'tracks' | 'albums' | 'about'>('tracks');
@@ -50,14 +52,15 @@ export const ArtistPage: React.FC = () => {
         }
       } catch (error) {
         console.error('Failed to fetch artist data', error);
+      } finally {
+        setLoading(false);
       }
     }
     loadArtist();
   }, [artistId]);
 
-  if (!artist) {
-    return <div className='page-container'>Loading artist...</div>;
-  }
+  if (artistId && loading) return <LoadingPage text='Loading artist' />;
+  if (!artist) return <NotFoundPage text='Artist does not exist' />;
 
   return (
     <div className='page-container' ref={scrollRef}>

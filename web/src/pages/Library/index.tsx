@@ -6,10 +6,12 @@ import { Image } from '~/components/ImageFallback';
 import type { ArtistBasic, PlaylistBasic } from '@common/types';
 import { MOCK_ARTISTS, MOCK_PLAYLISTS } from '~/mockdata';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { LoadingPage } from '~/components/StatusPages';
 
 export function LibraryPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [loading, setLoading] = useState<boolean>(true);
   const [tab, setTab] = useState<'playlists' | 'artists'>('playlists');
   const [artists, setArtists] = useState<ArtistBasic[]>([]);
   const [playlists, setPlaylists] = useState<PlaylistBasic[]>([]);
@@ -22,16 +24,20 @@ export function LibraryPage() {
         artists: MOCK_ARTISTS,
         playlists: MOCK_PLAYLISTS,
       },
-    ).then((data) => {
-      setArtists(data.artists);
-      setPlaylists(data.playlists);
-    });
+    )
+      .then((data) => {
+        setArtists(data.artists);
+        setPlaylists(data.playlists);
+      })
+      .finally(() => setLoading(false));
 
     const tab = searchParams.get('tab');
     if (tab && ['playlists', 'artists'].includes(tab)) {
       setTab(tab as 'playlists' | 'artists');
     }
   }, []);
+
+  if (loading) return <LoadingPage text='Loading library' />;
 
   return (
     <div className='page-container'>

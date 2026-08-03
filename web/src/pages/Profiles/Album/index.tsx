@@ -8,6 +8,7 @@ import { Image } from '~/components/ImageFallback';
 import { formatTime } from '~/utils/utils';
 import { useAudioPlayer } from '~/hooks/useAudioPlayer';
 import { useSongLike } from '~/hooks/useSongLike';
+import { LoadingPage, NotFoundPage } from '~/components/StatusPages';
 
 export const AlbumPage: React.FC = () => {
   const { playSong } = useAudioPlayer();
@@ -15,6 +16,7 @@ export const AlbumPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const albumId = searchParams.get('albumId');
 
+  const [loading, setLoading] = useState<boolean>(true);
   const [album, setAlbum] = useState<AlbumBasic | null>(null);
   const [isSaved, setIsSaved] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -54,9 +56,8 @@ export const AlbumPage: React.FC = () => {
     loadAlbum();
   }, [albumId]);
 
-  if (!album) {
-    return <div className='page-container'>Loading album...</div>;
-  }
+  if (albumId && loading) return <LoadingPage text='Loading album' />;
+  if (!album) return <NotFoundPage text='Album does not exist' />;
 
   const authorName = typeof album.author === 'string' ? 'Various Artists' : album.author.name;
 

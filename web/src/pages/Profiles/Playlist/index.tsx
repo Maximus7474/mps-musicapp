@@ -8,6 +8,7 @@ import { Image } from '~/components/ImageFallback';
 import { formatTime } from '~/utils/utils';
 import { useAudioPlayer } from '~/hooks/useAudioPlayer';
 import { useSongLike } from '~/hooks/useSongLike';
+import { LoadingPage, NotFoundPage } from '~/components/StatusPages';
 
 export const PlaylistPage: React.FC = () => {
   const { playSong } = useAudioPlayer();
@@ -16,6 +17,7 @@ export const PlaylistPage: React.FC = () => {
   const rawPlaylistId = searchParams.get('playlistId');
   const playlistId = rawPlaylistId ? parseInt(rawPlaylistId) : null;
 
+  const [loading, setLoading] = useState<boolean>(true);
   const [playlist, setPlaylist] = useState<PlaylistBasic | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -50,14 +52,15 @@ export const PlaylistPage: React.FC = () => {
         }
       } catch (error) {
         console.error('Failed to fetch playlist data', error);
+      } finally {
+        setLoading(false);
       }
     }
     loadPlaylist();
   }, [playlistId]);
 
-  if (!playlist) {
-    return <div className='page-container'>Loading playlist...</div>;
-  }
+  if (playlistId && loading) return <LoadingPage text='Loading playlist' />;
+  if (!playlist) return <NotFoundPage text='Playlist does not exist' />;
 
   return (
     <div className='page-container' ref={scrollRef}>

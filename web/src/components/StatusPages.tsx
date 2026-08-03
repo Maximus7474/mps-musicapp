@@ -1,4 +1,5 @@
-import { FileQuestionMark, Loader2 } from 'lucide-react';
+import { ArrowLeft, FileQuestionMark, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface StatusPageProps {
   text?: string;
@@ -14,10 +15,17 @@ export function LoadingPage({ text = 'Loading' }: StatusPageProps) {
 }
 
 export function NotFoundPage({ text = 'Content not found' }: StatusPageProps) {
+  const navigate = useNavigate();
+
   return (
     <div className='page-container status'>
-      <p>{text}</p>
       <FileQuestionMark />
+      <p className='status-text'>{text}</p>
+
+      <button onClick={() => navigate(-1)}>
+        <ArrowLeft size={18} />
+        Go Back
+      </button>
     </div>
   );
 }

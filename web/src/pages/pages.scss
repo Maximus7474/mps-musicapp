@@ -46,6 +46,36 @@
         animation: loader-spin 1s linear infinite;
       }
     }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1.25rem;
+      margin-top: 0.5rem;
+      border-radius: 0.75rem;
+      color: var(--text-primary, #ffffff);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      svg {
+        width: 1.125rem;
+        height: 1.125rem;
+        color: currentColor;
+        transition: transform 0.2s ease;
+      }
+
+      &:hover {
+        background-color: var(--bg-surface-hover);
+
+        svg {
+          transform: translateX(-0.25rem);
+        }
+      }
+    }
   }
 }
 

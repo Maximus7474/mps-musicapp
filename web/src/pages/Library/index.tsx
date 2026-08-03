@@ -59,7 +59,7 @@ export function LibraryPage() {
       {tab === 'playlists' && (
         <div>
           {playlists.map((p) => (
-            <div key={p.id} className='song-list-item'>
+            <button key={p.id} onClick={() => navigate(`/playlist?playlistId=${p.id}`)} className='song-list-item'>
               {p.image ? (
                 <div className='cover' style={{ background: `linear-gradient(${generateGradient(p.id)})` }}>
                   <Image src={p.image} alt={p.title} style={{ objectFit: 'contain', padding: 2 }} />
@@ -71,12 +71,12 @@ export function LibraryPage() {
               )}
               <div className='details'>
                 <p className='title'>{p.title}</p>
-                <p className='meta'>Playlist · {p.tracks} songs</p>
+                <p className='meta'>Playlist · {p.tracks.length} songs</p>
               </div>
               <button className='like-button'>
                 <MoreHorizontal />
               </button>
-            </div>
+            </button>
           ))}
         </div>
       )}

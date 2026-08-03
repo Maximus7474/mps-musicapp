@@ -4,7 +4,7 @@ import Frame from './components/dev/Frame';
 import { Routes, Route } from 'react-router-dom';
 import ThemeToggler from './components/dev/Theming';
 import { PageLayout } from './components/PageLayout';
-import { AlbumPage, ArtistPage, HomePage, LibraryPage, ProfilePage, SearchPage } from './pages';
+import { AlbumPage, ArtistPage, HomePage, LibraryPage, PlaylistPage, ProfilePage, SearchPage } from './pages';
 
 import './styles/App.scss';
 import './pages/pages.scss';
@@ -33,6 +33,7 @@ const App = () => {
             <Route path='search' element={<SearchPage />} />
             <Route path='artist' element={<ArtistPage />} />
             <Route path='album' element={<AlbumPage />} />
+            <Route path='playlist' element={<PlaylistPage />} />
 
             {/* Redirect if accessing an unknown or unauthorised page */}
             <Route path='*' element={<Navigate to='/' replace />} />

@@ -36,6 +36,13 @@ export type ArtistProfile = ArtistBasic & {
 export type PlaylistBasic = {
   id: number;
   title: string;
+  tracks: SongBasic[];
+  image?: string;
+};
+
+export type PlaylistRecap = {
+  id: number;
+  title: string;
   tracks: number;
   image?: string;
 };

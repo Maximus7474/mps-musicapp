@@ -3,18 +3,19 @@ import { useEffect, useState } from 'react';
 import { SectionHeader } from '~/components/SectionHeader';
 import { fetchNui } from '~/utils/fetchNui';
 import { Image } from '~/components/ImageFallback';
-import type { ArtistBasic, BasicResponse, PlaylistBasic, SongBasic } from '@common/types';
-import { MOCK_SONGS, MOCK_ARTISTS, MOCK_PLAYLISTS } from '~/mockdata/index';
+import type { ArtistBasic, PlaylistRecap, SongBasic } from '@common/types';
+import { MOCK_SONGS, MOCK_ARTISTS } from '~/mockdata/index';
 import { useNavigate } from 'react-router-dom';
 import { useAudioPlayer } from '~/hooks/useAudioPlayer';
 import { useSongLike } from '~/hooks/useSongLike';
+import { MOCK_PLAYLISTS_RECAP } from '~/mockdata/playlists';
 
 export function HomePage() {
   const navigate = useNavigate();
   const audioPlayer = useAudioPlayer();
   const [latestSongs, setLatestSongs] = useState<SongBasic[]>([]);
   const [recentArtists, setRecentArtists] = useState<ArtistBasic[]>([]);
-  const [recentPlaylists, setRecentPlaylists] = useState<PlaylistBasic[]>([]);
+  const [recentPlaylists, setRecentPlaylists] = useState<PlaylistRecap[]>([]);
 
   const { toggleLike } = useSongLike((songId, liked) => {
     setLatestSongs((prev) => prev.map((song) => (song.id === songId ? { ...song, liked } : song)));
@@ -24,14 +25,14 @@ export function HomePage() {
     fetchNui<{
       latestsongs: SongBasic[];
       recentartists: ArtistBasic[];
-      recentplaylists: PlaylistBasic[];
+      recentplaylists: PlaylistRecap[];
     }>(
       'musicapp:homescreendata',
       {},
       {
         latestsongs: MOCK_SONGS,
         recentartists: MOCK_ARTISTS,
-        recentplaylists: MOCK_PLAYLISTS.slice(3),
+        recentplaylists: MOCK_PLAYLISTS_RECAP.slice(3),
       },
     ).then((data) => {
       setLatestSongs(data.latestsongs);
@@ -60,7 +61,7 @@ export function HomePage() {
         />
         <div className='horizontal-scroll-list'>
           {recentPlaylists.map((p) => (
-            <div key={p.id} className='playlist-card'>
+            <button key={p.id} onClick={() => navigate(`/playlist?playlistId=${p.id}`)} className='playlist-card'>
               <div className='image-wrapper'>
                 <Image src={p.image} alt={p.title} />
                 <div className='overlay'>
@@ -70,7 +71,7 @@ export function HomePage() {
                 </div>
               </div>
               <p className='playlist-title'>{p.title}</p>
-            </div>
+            </button>
           ))}
         </div>
       </div>

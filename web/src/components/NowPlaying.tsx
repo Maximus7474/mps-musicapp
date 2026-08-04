@@ -192,6 +192,15 @@ export const NowPlayingBar = () => {
       className={`now-playing-bar ${!currentSong ? 'is-empty' : ''}`}
       onClick={() => currentSong && setIsExpanded(true)}
     >
+      <button
+        onClick={(e) => handleActionClick(e, likeSong)}
+        disabled={!currentSong}
+        className={`like-btn ${isLiked ? 'liked' : ''}`}
+        aria-label='Like track'
+      >
+        <HeartIcon size={20} fill={isLiked ? 'currentColor' : 'none'} />
+      </button>
+
       {currentSong && <Image src={currentSong.image} alt={currentSong.name} className='album-art' fallbackLabel='' />}
 
       <div className='track-info'>
@@ -208,7 +217,6 @@ export const NowPlayingBar = () => {
           onClick={(e) => handleActionClick(e, togglePlayPause)}
           disabled={!currentSong || hasErrored}
           className='play-pause-btn'
-          aria-label={isPlaying ? 'Pause' : 'Play'}
         >
           {!currentSong ? (
             <PlayOff size={16} />
@@ -222,12 +230,11 @@ export const NowPlayingBar = () => {
         </button>
 
         <button
-          onClick={(e) => handleActionClick(e, likeSong)}
-          disabled={!currentSong || hasErrored}
-          className={`like-btn ${isLiked ? 'liked' : ''}`}
-          aria-label='Like track'
+          onClick={(e) => handleActionClick(e, playNext)}
+          disabled={!currentSong}
+          className='control-btn'
         >
-          <HeartIcon size={20} fill={isLiked ? 'currentColor' : 'none'} />
+          <ChevronRight size={18} />
         </button>
       </div>
     </div>

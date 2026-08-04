@@ -40,14 +40,13 @@ export const PlaylistPage: React.FC = () => {
   const loadPlaylist = (shuffleTracks: boolean = false, songId: number | false = false) => {
     if (!playlist) return;
 
-    const tracks = shuffleTracks ? shuffle(playlist.tracks) : playlist.tracks;
-    queue.load(tracks, songId === false);
+    queue.load(playlist.tracks, songId === false, shuffleTracks);
 
     if (typeof songId === 'number') {
-      const idx = tracks.findIndex((s) => s.id === songId);
+      const idx = playlist.tracks.findIndex((s) => s.id === songId);
       queue.skipTo(idx, true);
     }
-  }
+  };
 
   useEffect(() => {
     async function loadPlaylist() {
@@ -127,7 +126,10 @@ export const PlaylistPage: React.FC = () => {
               <div key={track.id || track.name} className='song-list-item'>
                 <span className='index'>{i + 1}</span>
 
-                <button className='cover-button' onClick={(e) => handleActionClick(e, () => loadPlaylist(false, track.id))}>
+                <button
+                  className='cover-button'
+                  onClick={(e) => handleActionClick(e, () => loadPlaylist(false, track.id))}
+                >
                   <Image src={track.image} alt={track.name} className='cover' />
                   <div className='play-overlay'>
                     <Play size={18} fill='currentColor' />

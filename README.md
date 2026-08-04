@@ -1,6 +1,12 @@
-# React Typescript LB Phone app boiler plate
+# Beatr
 
-Pure typescript boilerplate to create addon apps for lb phone
+Beatr is a parody music application inspired by Deezer, taking inspiration from it's layout and colour palette it's built to offer various features to players to stream music in game.
+
+> [!IMPORTANT]
+> Due to Cfx’s [Platform License Agreement](https://fivem.net/terms) and [YouTube’s Developer Policies](https://developers.google.com/youtube/terms/developer-policies#i.-additional-prohibitions), this application does not provide the ability to stream from YouTube.
+> This is because:
+> * Cfx/Rockstar terms restrict unauthorized use of copyrighted and other protected content,
+> * YouTube policies prohibit features that play content from a background player or separate audio/video components of YouTube audiovisual content.
 
 ---
 
@@ -21,3 +27,4 @@ Pure typescript boilerplate to create addon apps for lb phone
 
 * 🎨 **UI Template:** [lb-scripts / lb-phone-app-template](https://github.com/lbphone/lb-phone-app-template)
 * ⚙️ **TypeScript Boilerplate:** [Overextended / fivem-typescript-boilerplate](https://github.com/overextended/fivem-typescript-boilerplate)
+* **Combined Boilerplate:** [Maximus7474 / lbphone-ts-apptemplate](https://github.com/Maximus7474/lbphone-ts-apptemplate)

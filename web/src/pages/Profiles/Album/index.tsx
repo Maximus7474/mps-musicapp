@@ -51,6 +51,8 @@ export const AlbumPage: React.FC = () => {
         }
       } catch (error) {
         console.error('Failed to fetch album data', error);
+      } finally {
+        setLoading(false);
       }
     }
     loadAlbum();

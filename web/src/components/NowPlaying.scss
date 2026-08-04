@@ -129,8 +129,8 @@
   width: 100%;
   height: 100%;
   z-index: 50;
-  background-color: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(30px);
+  background-color: var(--bg-transparent);
+  backdrop-filter: blur(30px) brightness(0.25);
   display: flex;
   flex-direction: column;
   padding: 4rem 1.5rem;
@@ -140,17 +140,22 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: var(--text-primary);
+    color: var(--text-light);
     font-weight: 600;
     margin-bottom: 2rem;
 
     .close-btn {
       background: none;
       border: none;
-      color: var(--text-primary);
+      color: var(--text-light);
       cursor: pointer;
       padding: 0.25rem;
       display: flex;
+      transition: color 0.2s;
+
+      &:hover {
+        color: var(--color-brand);
+      }
     }
   }
 
@@ -186,7 +191,7 @@
       .title {
         font-size: 1.5rem;
         font-weight: 800;
-        color: var(--text-primary);
+        color: var(--text-light);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;

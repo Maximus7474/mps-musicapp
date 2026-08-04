@@ -1,13 +1,22 @@
 import { useState, useEffect } from 'react';
-import { Play, Pause, PlayOff, HeartIcon, ChevronDown, VolumeX, Volume2, CloudAlert } from 'lucide-react';
+import {
+  Play,
+  Pause,
+  PlayOff,
+  HeartIcon,
+  ChevronDown,
+  VolumeX,
+  Volume2,
+  CloudAlert,
+  ListMusic,
+} from 'lucide-react';
 import { useAudioPlayer } from '~/hooks/useAudioPlayer';
 import { formatTime } from '~/utils/utils';
-import { fetchNui } from '~/utils/fetchNui';
-import type { BasicResponse, SongBasic } from '@common/types';
 import { Image } from './ImageFallback';
+import { QueueView } from './QueueView';
+import { useSongLike } from '~/hooks/useSongLike';
 
 import './NowPlaying.scss';
-import { useSongLike } from '~/hooks/useSongLike';
 
 export const NowPlayingBar = () => {
   const {
@@ -25,6 +34,7 @@ export const NowPlayingBar = () => {
 
   const [isLiked, setIsLiked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showQueue, setShowQueue] = useState(false);
 
   useEffect(() => {
     setIsLiked(currentSong?.liked ?? false);
@@ -38,7 +48,10 @@ export const NowPlayingBar = () => {
   });
 
   useEffect(() => {
-    if (!currentSong) setIsExpanded(false);
+    if (!currentSong) {
+      setIsExpanded(false);
+      setShowQueue(false);
+    }
   }, [currentSong]);
 
   const likeSong = () => {
@@ -63,66 +76,77 @@ export const NowPlayingBar = () => {
           <button className='close-btn' onClick={() => setIsExpanded(false)}>
             <ChevronDown size={28} />
           </button>
-          <span>Now Playing</span>
-          <div style={{ width: 28 }} />
-        </div>
-
-        <div className='fullscreen-art'>
-          <Image src={currentSong?.image} alt={currentSong?.name} className='large-cover' fallbackLabel='' />
-        </div>
-
-        <div className='fullscreen-info'>
-          <div className='text-wrapper'>
-            <h2 className='title'>{currentSong?.name}</h2>
-            <p className='artist'>{currentSong?.author}</p>
-          </div>
+          <span>{showQueue ? 'Queue' : 'Now Playing'}</span>
           <button
-            onClick={(e) => handleActionClick(e, likeSong)}
-            className={`fullscreen-like ${isLiked ? 'liked' : ''}`}
+            className={`queue-toggle-btn ${showQueue ? 'active' : ''}`}
+            onClick={() => setShowQueue(!showQueue)}
           >
-            <HeartIcon size={28} fill={isLiked ? 'currentColor' : 'none'} />
+            <ListMusic size={24} />
           </button>
         </div>
 
-        <div className='fullscreen-progress'>
-          <input
-            type='range'
-            min={0}
-            max={safeDuration || 100}
-            value={safeCurrentTime}
-            onChange={(e) => skipTo(Number(e.target.value))}
-            className='scrubber'
-            style={{ '--progress': `${progressPercent}%` } as React.CSSProperties}
-          />
-          <div className='time-labels'>
-            <span>{formatTime(safeCurrentTime)}</span>
-            <span>{formatTime(safeDuration)}</span>
-          </div>
-        </div>
+        {showQueue ? (
+          <QueueView onClose={() => setShowQueue(false)} />
+        ) : (
+          <>
+            <div className='fullscreen-art'>
+              <Image src={currentSong?.image} alt={currentSong?.name} className='large-cover' fallbackLabel='' />
+            </div>
 
-        <div className='fullscreen-volume'>
-          <button className='mute-btn' onClick={toggleMute}>
-            {volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
-          </button>
-          <input
-            type='range'
-            min={0}
-            max={1}
-            step={0.01}
-            value={volume}
-            onChange={(e) => setVolume(Number(e.target.value))}
-            className='volume-slider'
-            style={{ '--volume': volumePercent } as React.CSSProperties}
-          />
-        </div>
+            <div className='fullscreen-info'>
+              <div className='text-wrapper'>
+                <h2 className='title'>{currentSong?.name}</h2>
+                <p className='artist'>{currentSong?.author}</p>
+              </div>
+              <button
+                onClick={(e) => handleActionClick(e, likeSong)}
+                className={`fullscreen-like ${isLiked ? 'liked' : ''}`}
+              >
+                <HeartIcon size={28} fill={isLiked ? 'currentColor' : 'none'} />
+              </button>
+            </div>
 
-        <div className='fullscreen-controls'>
-          <button onClick={togglePlayPause} className='play-pause-btn large'>
-            {hasErrored ? <CloudAlert size={32} /> : isPlaying ? <Pause size={32} /> : <Play size={32} />}
-          </button>
-        </div>
+            <div className='fullscreen-progress'>
+              <input
+                type='range'
+                min={0}
+                max={safeDuration || 100}
+                value={safeCurrentTime}
+                onChange={(e) => skipTo(Number(e.target.value))}
+                className='scrubber'
+                style={{ '--progress': `${progressPercent}%` } as React.CSSProperties}
+              />
+              <div className='time-labels'>
+                <span>{formatTime(safeCurrentTime)}</span>
+                <span>{formatTime(safeDuration)}</span>
+              </div>
+            </div>
 
-        {hasErrored && <p className='playback-error'>An error occured when initiating playback of the song.</p>}
+            <div className='fullscreen-volume'>
+              <button className='mute-btn' onClick={toggleMute}>
+                {volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
+              </button>
+              <input
+                type='range'
+                min={0}
+                max={1}
+                step={0.01}
+                value={volume}
+                onChange={(e) => setVolume(Number(e.target.value))}
+                className='volume-slider'
+                style={{ '--volume': volumePercent } as React.CSSProperties}
+              />
+            </div>
+
+            <div className='fullscreen-controls'>
+              <button onClick={togglePlayPause} className='play-pause-btn large'>
+                {hasErrored ? <CloudAlert size={32} /> : isPlaying ? <Pause size={32} /> : <Play size={32} />}
+              </button>
+            </div>
+
+            {hasErrored && <p className='playback-error'>An error occurred when initiating playback of the song.</p>}
+          </>
+        )}
       </div>
     );
   }

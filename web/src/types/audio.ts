@@ -16,6 +16,7 @@ export interface AudioContextType {
   currentTime: number;
   duration: number;
   playSong: (song: SongBasic) => void;
+  clearSong:  () => void;
   playNext: () => void;
   playPrevious: () => void;
   togglePlayPause: () => void;

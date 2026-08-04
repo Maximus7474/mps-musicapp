@@ -78,11 +78,18 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   };
 
+  const clearSong = () => {
+    setCurrentSong(null);
+    setCurrentTime(0);
+    setDuration(0);
+    hasLoggedStream.current = false;
+  }
+
   const playNext = useCallback(() => {
     if (hasErrored) return;
 
-    if (queueList.length > 0 && currentIndex + 1 < queueList.length) {
-      const nextIndex = currentIndex + 1;
+    if (queueList.length > 0) {
+      const nextIndex = currentIndex + 1 === queueList.length ? 0 : currentIndex + 1;
       setCurrentIndex(nextIndex);
       playSong(queueList[nextIndex]);
     } else {
@@ -255,6 +262,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         hasErrored,
         playSong,
         playNext,
+        clearSong,
         playPrevious,
         togglePlayPause,
         skipTo,

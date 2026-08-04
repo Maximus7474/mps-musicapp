@@ -4,7 +4,7 @@ import { useAudioPlayer } from '~/hooks/useAudioPlayer';
 import { formatTime } from '~/utils/utils';
 import { Image } from './ImageFallback';
 
-import './QueueView.scss'
+import './QueueView.scss';
 
 export const QueueView: React.FC = () => {
   const { isPlaying, clearSong, queue } = useAudioPlayer();
@@ -32,8 +32,8 @@ export const QueueView: React.FC = () => {
 
   const handleClear = () => {
     clearSong();
-    queue.clear()
-  }
+    queue.clear();
+  };
 
   return (
     <div className='queue-view-container'>
@@ -75,14 +75,9 @@ export const QueueView: React.FC = () => {
                     <p className='artist'>{track.author}</p>
                   </div>
 
-                  <span className='duration'>
-                    {track.duration ? formatTime(track.duration) : '—'}
-                  </span>
+                  <span className='duration'>{track.duration ? formatTime(track.duration) : '—'}</span>
 
-                  <button
-                    className='remove-btn'
-                    onClick={(e) => handleRemove(e, index)}
-                  >
+                  <button className='remove-btn' onClick={(e) => handleRemove(e, index)}>
                     <Trash2 size={18} />
                   </button>
                 </div>

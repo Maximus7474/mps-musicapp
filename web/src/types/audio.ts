@@ -3,8 +3,12 @@ import type { SongBasic } from '@common/types';
 export interface QueueSystem {
   list: SongBasic[];
   currentIndex: number;
+  isShuffled: boolean;
+  isRepeating: boolean;
   skipTo: (idx: number, play?: boolean) => void;
-  load: (songs: SongBasic[], autoPlay?: boolean) => void;
+  load: (songs: SongBasic[], autoPlay?: boolean, shuffleQueue?: boolean) => void;
+  shuffle: () => void;
+  repeat: () => void;
   add: (songOrSongs: SongBasic | SongBasic[]) => void;
   remove: (index: number) => void;
   clear: () => void;
@@ -16,7 +20,7 @@ export interface AudioContextType {
   currentTime: number;
   duration: number;
   playSong: (song: SongBasic) => void;
-  clearSong:  () => void;
+  clearSong: () => void;
   playNext: () => void;
   playPrevious: () => void;
   togglePlayPause: () => void;

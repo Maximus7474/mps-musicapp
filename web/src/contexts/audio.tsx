@@ -2,6 +2,8 @@ import type { SongBasic } from '@common/types';
 import React, { useRef, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { fetchNui } from '~/utils/fetchNui';
 import { AudioContext } from '~/hooks/useAudioPlayer';
+import { shuffle } from '~/utils/utils';
+import type { QueueSystem } from '~/types';
 
 /** The percentage of the track that must be played to register a "stream" */
 const STREAM_LOG_THRESHOLD = 0.6; // 60%
@@ -17,6 +19,9 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [volume, setVolumeState] = useState<number>(1);
   const [prevVolume, setPrevVolume] = useState<number>(1);
   const [queueList, setQueueList] = useState<SongBasic[]>([]);
+  const [queueOrder, setQueueOrder] = useState<SongBasic['id'][]>([]);
+  const [isShuffled, setShuffled] = useState(false);
+  const [isRepeating, setRepeat] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
 
   const safePlay = async () => {
@@ -83,33 +88,43 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setCurrentTime(0);
     setDuration(0);
     hasLoggedStream.current = false;
-  }
+  };
 
   const playNext = useCallback(() => {
-    if (hasErrored) return;
+    const isAtEnd = currentIndex + 1 >= queueList.length;
 
-    if (queueList.length > 0) {
-      const nextIndex = currentIndex + 1 === queueList.length ? 0 : currentIndex + 1;
-      setCurrentIndex(nextIndex);
-      playSong(queueList[nextIndex]);
-    } else {
+    if (isAtEnd && !isRepeating) {
       setIsPlaying(false);
+      return;
     }
-  }, [queueList, currentIndex, hasErrored]);
+
+    const nextIndex = isAtEnd ? 0 : currentIndex + 1;
+    setCurrentIndex(nextIndex);
+    playSong(queueList[nextIndex]);
+  }, [queueList, currentIndex]);
 
   const playPrevious = () => {
     if (hasErrored) return;
 
-    // restart track if 5+ seconds were played
     if (currentTime > 5) {
       skipTo(0);
       return;
     }
 
-    if (queueList.length > 0 && currentIndex > 0) {
-      const prevIndex = currentIndex - 1;
+    let prevIndex = -1;
+
+    if (currentIndex > 0) {
+      prevIndex = currentIndex - 1;
+    } else if (isRepeating) {
+      prevIndex = queueList.length - 1;
+    }
+
+    if (prevIndex !== -1) {
       setCurrentIndex(prevIndex);
       playSong(queueList[prevIndex]);
+    } else {
+      // default to restart track
+      skipTo(0);
     }
   };
 
@@ -175,21 +190,32 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     playNext();
   };
 
-  const queue = {
+  const queue: QueueSystem = {
     list: queueList,
     currentIndex,
+    isShuffled,
+    isRepeating,
+
     skipTo: (idx: number, play: boolean = false) => {
       if (idx < 0 || idx >= queueList.length) return;
 
       setCurrentIndex(idx);
       if (play) playSong(queueList[idx]);
     },
-    load: (songs: SongBasic[], autoPlay = true) => {
+
+    load: (songs: SongBasic[], autoPlay = true, shuffleQueue = false) => {
       setErrored(false);
       setQueueList(songs);
+      setQueueOrder(songs.map((s) => s.id));
 
       if (songs.length > 0) {
         setCurrentIndex(0);
+
+        if (shuffleQueue) {
+          setQueueList(shuffle(songs));
+          setShuffled(true);
+        }
+
         if (autoPlay) {
           playSong(songs[0]);
         }
@@ -199,7 +225,28 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       }
     },
 
-    add: (songOrSongs: SongBasic | SongBasic[]) => {
+    shuffle: () => {
+      setShuffled((prev) => {
+        if (prev) {
+          const songMap = new Map(queueList.map((song) => [song.id, song]));
+          const originalQueue = queueOrder
+            .map((id) => songMap.get(id))
+            .filter((song): song is SongBasic => song !== undefined);
+
+          setQueueList(originalQueue);
+        } else {
+          setQueueList(shuffle(queueList));
+        }
+
+        return !prev;
+      });
+    },
+
+    repeat: () => {
+      setRepeat((prev) => !prev);
+    },
+
+    add: (songOrSongs: SongBasic | SongBasic[], play: boolean = false) => {
       const newItems = Array.isArray(songOrSongs) ? songOrSongs : [songOrSongs];
 
       setQueueList((prev) => {
@@ -208,16 +255,18 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         // If queue was previously empty and nothing is playing, start playback
         if (prev.length === 0 && !currentSong && newItems.length > 0) {
           setCurrentIndex(0);
-          playSong(newItems[0]);
+          if (play) playSong(newItems[0]);
         }
         return updated;
       });
+      setQueueOrder((prev) => [...prev, ...newItems.map((s) => s.id)]);
     },
 
     remove: (index: number) => {
       if (index < 0 || index >= queueList.length) return;
 
       setQueueList((prev) => prev.filter((_, i) => i !== index));
+      setQueueOrder((prev) => prev.filter((_, i) => i !== index));
 
       if (index < currentIndex) {
         setCurrentIndex((prev) => prev - 1);
@@ -235,6 +284,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
     clear: () => {
       setQueueList([]);
+      setQueueOrder([]);
       setCurrentIndex(-1);
     },
   };

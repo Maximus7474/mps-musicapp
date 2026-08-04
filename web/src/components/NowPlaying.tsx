@@ -9,6 +9,10 @@ import {
   Volume2,
   CloudAlert,
   ListMusic,
+  Shuffle,
+  ChevronLeft,
+  ChevronRight,
+  Repeat,
 } from 'lucide-react';
 import { useAudioPlayer } from '~/hooks/useAudioPlayer';
 import { formatTime } from '~/utils/utils';
@@ -22,6 +26,8 @@ export const NowPlayingBar = () => {
   const {
     currentSong,
     isPlaying,
+    playPrevious,
+    playNext,
     currentTime,
     duration,
     togglePlayPause,
@@ -30,6 +36,7 @@ export const NowPlayingBar = () => {
     volume,
     setVolume,
     hasErrored,
+    queue,
   } = useAudioPlayer();
 
   const [isLiked, setIsLiked] = useState(false);
@@ -77,16 +84,13 @@ export const NowPlayingBar = () => {
             <ChevronDown size={28} />
           </button>
           <span>{showQueue ? 'Queue' : 'Now Playing'}</span>
-          <button
-            className={`queue-toggle-btn ${showQueue ? 'active' : ''}`}
-            onClick={() => setShowQueue(!showQueue)}
-          >
+          <button className={`queue-toggle-btn ${showQueue ? 'active' : ''}`} onClick={() => setShowQueue(!showQueue)}>
             <ListMusic size={24} />
           </button>
         </div>
 
         {showQueue ? (
-          <QueueView onClose={() => setShowQueue(false)} />
+          <QueueView />
         ) : (
           <>
             <div className='fullscreen-art'>
@@ -139,8 +143,40 @@ export const NowPlayingBar = () => {
             </div>
 
             <div className='fullscreen-controls'>
+              <button
+                onClick={queue.repeat}
+                className={`control-btn ${queue.isRepeating ? 'active' : ''}`}
+                disabled={hasErrored}
+              >
+                <Repeat size={16} />
+              </button>
+
+              <button
+                onClick={(e) => handleActionClick(e, playPrevious)}
+                className='control-btn large'
+                disabled={hasErrored}
+              >
+                <ChevronLeft size={32} />
+              </button>
+
               <button onClick={togglePlayPause} className='play-pause-btn large'>
                 {hasErrored ? <CloudAlert size={32} /> : isPlaying ? <Pause size={32} /> : <Play size={32} />}
+              </button>
+
+              <button
+                onClick={(e) => handleActionClick(e, playNext)}
+                className='control-btn large'
+                disabled={queue.list.length === 0}
+              >
+                <ChevronRight size={32} />
+              </button>
+
+              <button
+                onClick={queue.shuffle}
+                className={`control-btn ${queue.isShuffled ? 'active' : ''}`}
+                disabled={hasErrored || queue.list.length === 0}
+              >
+                <Shuffle size={16} />
               </button>
             </div>
 

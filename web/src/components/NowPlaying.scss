@@ -106,6 +106,69 @@
   }
 }
 
+.shuffle-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+
+  &:disabled {
+    filter: grayscale(0.65);
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--bg-transparent-hover);
+  }
+
+  &.active {
+    color: var(--color-brand);
+  }
+
+  &.large {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+}
+
+.control-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+
+  &:disabled {
+    filter: grayscale(0.65);
+  }
+
+  &:hover:not(:disabled) {
+    color: var(--color-brand-hover);
+    background-color: var(--bg-transparent-hover);
+  }
+
+  &:active, &.active {
+    color: var(--color-brand);
+  }
+
+  &.large {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+}
+
 .like-btn {
   background: none;
   border: none;
@@ -254,7 +317,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 2rem;
+    gap: 1rem;
+    padding: 0 4rem;
   }
 }
 

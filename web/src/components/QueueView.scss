@@ -94,7 +94,7 @@
     transition: background-color 0.2s, border-color 0.2s;
 
     &:hover {
-      background-color: var(--bg-surface-hover);
+      background-color: var(--bg-transparent-hover);
 
       .remove-btn {
         opacity: 1;
@@ -174,16 +174,18 @@
     }
 
     .remove-btn {
+      display: flex;
+      align-items: center;
       background: none;
       border: none;
       color: var(--icon-inactive);
       cursor: pointer;
       padding: 0.25rem;
-      opacity: 0;
+      opacity: 0.5;
       transition: all 0.2s;
 
       &:hover {
-        color: #ef4444; // Destructive action highlight
+        color: #ef4444;
       }
     }
   }

@@ -259,7 +259,7 @@
   cursor: pointer;
 
   &:hover {
-    background-color: var(--bg-surface-hover);
+    background-color: var(--bg-transparent-hover);
   }
 
   .index {
@@ -488,7 +488,7 @@
   display: flex;
   align-items: center;
   border-radius: 1rem;
-  background-color: var(--bg-surface);
+  background-color: var(--bg-transparent-subtle);
 
   .stat-box {
     flex: 1;
@@ -774,7 +774,7 @@
     }
 
     &.btn-secondary {
-      background-color: var(--bg-surface);
+      background-color: var(--bg-transparent-hover);
       color: var(--text-primary);
       border: 1px solid var(--border-color);
     }

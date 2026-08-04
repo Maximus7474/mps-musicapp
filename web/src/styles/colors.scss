@@ -7,6 +7,9 @@ $light-colors: (
   "bg-surface": #f3f4f6,
   "bg-surface-hover": #e5e7eb,
   "bg-surface-active": #d1d5db,
+  "bg-transparent-subtle": rgba(0, 0, 0, 0.04),
+  "bg-transparent-hover": rgba(0, 0, 0, 0.08),
+  "bg-transparent-active": rgba(0, 0, 0, 0.12),
   "text-primary": #111827,
   "text-secondary": #6b7280,
   "text-muted": #9ca3af,
@@ -18,9 +21,12 @@ $light-colors: (
 
 $dark-colors: (
   "bg-app": #121212,
-  "bg-surface": rgba(255, 255, 255, 0.08),
-  "bg-surface-hover": rgba(255, 255, 255, 0.05),
-  "bg-surface-active": rgba(255, 255, 255, 0.12),
+  "bg-surface": #0A0A0A,
+  "bg-surface-hover": rgba(255, 255, 255),
+  "bg-surface-active": rgba(255, 255, 255),
+  "bg-transparent-subtle": rgba(255, 255, 255, 0.06),
+  "bg-transparent-hover": rgba(255, 255, 255, 0.10),
+  "bg-transparent-active": rgba(255, 255, 255, 0.16),
   "text-primary": #ffffff,
   "text-secondary": rgba(255, 255, 255, 0.6),
   "text-muted": rgba(255, 255, 255, 0.3),
@@ -33,6 +39,7 @@ $dark-colors: (
 :root {
   --color-brand: #{$brand-purple};
   --color-brand-hover: #{$brand-purple-hover};
+  --text-light: #ffffff;
 
   @each $key, $value in $light-colors {
     --#{$key}: #{$value};

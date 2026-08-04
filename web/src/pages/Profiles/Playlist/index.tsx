@@ -5,13 +5,13 @@ import type { PlaylistBasic } from '@common/types';
 import { ChevronLeft, HeartIcon, Play, PlayIcon, ShareIcon, ShuffleIcon } from 'lucide-react';
 import { MOCK_PLAYLISTS } from '~/mockdata';
 import { Image } from '~/components/ImageFallback';
-import { formatTime } from '~/utils/utils';
+import { formatTime, shuffle } from '~/utils/utils';
 import { useAudioPlayer } from '~/hooks/useAudioPlayer';
 import { useSongLike } from '~/hooks/useSongLike';
 import { LoadingPage, NotFoundPage } from '~/components/StatusPages';
 
 export const PlaylistPage: React.FC = () => {
-  const { playSong } = useAudioPlayer();
+  const { queue } = useAudioPlayer();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const rawPlaylistId = searchParams.get('playlistId');
@@ -36,6 +36,18 @@ export const PlaylistPage: React.FC = () => {
     e.stopPropagation();
     action();
   };
+
+  const loadPlaylist = (shuffleTracks: boolean = false, songId: number | false = false) => {
+    if (!playlist) return;
+
+    const tracks = shuffleTracks ? shuffle(playlist.tracks) : playlist.tracks;
+    queue.load(tracks, songId === false);
+
+    if (typeof songId === 'number') {
+      const idx = tracks.findIndex((s) => s.id === songId);
+      queue.skipTo(idx, true);
+    }
+  }
 
   useEffect(() => {
     async function loadPlaylist() {
@@ -100,10 +112,10 @@ export const PlaylistPage: React.FC = () => {
       </div>*/}
 
       <div className='play-shuffle-row'>
-        <button className='btn-primary'>
+        <button className='btn-primary' onClick={() => loadPlaylist()}>
           <PlayIcon /> Play
         </button>
-        <button className='btn-secondary'>
+        <button className='btn-secondary' onClick={() => loadPlaylist(true)}>
           <ShuffleIcon /> Shuffle
         </button>
       </div>
@@ -112,10 +124,10 @@ export const PlaylistPage: React.FC = () => {
         {playlist.tracks && playlist.tracks.length > 0 ? (
           <div className='track-list'>
             {playlist.tracks.map((track, i) => (
-              <div key={track.id || track.name} onClick={() => playSong(track)} className='song-list-item'>
+              <div key={track.id || track.name} className='song-list-item'>
                 <span className='index'>{i + 1}</span>
 
-                <button className='cover-button' onClick={(e) => handleActionClick(e, () => playSong(track))}>
+                <button className='cover-button' onClick={(e) => handleActionClick(e, () => loadPlaylist(false, track.id))}>
                   <Image src={track.image} alt={track.name} className='cover' />
                   <div className='play-overlay'>
                     <Play size={18} fill='currentColor' />

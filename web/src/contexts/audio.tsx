@@ -171,6 +171,12 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const queue = {
     list: queueList,
     currentIndex,
+    skipTo: (idx: number, play: boolean = false) => {
+      if (idx < 0 || idx >= queueList.length) return;
+
+      setCurrentIndex(idx);
+      if (play) playSong(queueList[idx]);
+    },
     load: (songs: SongBasic[], autoPlay = true) => {
       setErrored(false);
       setQueueList(songs);

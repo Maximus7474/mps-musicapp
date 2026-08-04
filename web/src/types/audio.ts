@@ -3,6 +3,7 @@ import type { SongBasic } from '@common/types';
 export interface QueueSystem {
   list: SongBasic[];
   currentIndex: number;
+  skipTo: (idx: number, play?: boolean) => void;
   load: (songs: SongBasic[], autoPlay?: boolean) => void;
   add: (songOrSongs: SongBasic | SongBasic[]) => void;
   remove: (index: number) => void;

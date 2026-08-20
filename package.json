@@ -1,8 +1,8 @@
 {
-	"name": "mps-lb-alerter",
+	"name": "mps-musicapp",
 	"author": "Maximus7474",
 	"version": "0.0.1",
-	"license": "",
+	"license": "GPL-3.0-only",
 	"description": "",
 	"type": "module",
 	"scripts": {

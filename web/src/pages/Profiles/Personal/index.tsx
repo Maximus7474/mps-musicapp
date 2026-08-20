@@ -15,7 +15,7 @@ export function ProfilePage() {
   ];
 
   return (
-    <div className='page-container'>
+    <div className='page-container no-dock'>
       <div className='page-header'>
         <h1 className='title'>Your Profile</h1>
         <button className='icon-button'>

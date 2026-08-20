@@ -60,3 +60,45 @@ export type AlbumBasic = {
     | 'various_artists';
   tracks: SongBasic[];
 };
+
+export type SongMetric = SongBasic & {
+  streams: number;
+  weeklyChangePercent: number;
+};
+
+export type ArtistMetrics = {
+  totalStreams: number;
+  monthlyListeners: number;
+  topTrack: SongMetric | null;
+  recentTracks: SongMetric[];
+};
+
+export type CreateSongPayload = {
+  name: string;
+  author: string;
+  url: string;
+  image?: string;
+  duration?: number;
+};
+
+export type SaveAlbumPayload = {
+  id?: string;
+  name: string;
+  image: string;
+  year: string;
+  tracks: SongBasic[];
+}
+
+export type CreateAlbumPayload = {
+  name: string;
+  image: string;
+  year: string;
+  author: {
+    name: string;
+    id: number;
+  };
+  tracks: CreateSongPayload[];
+};
+
+export type EditSongPayload = Partial<Omit<SongBasic, 'id'>> & { id: number };
+export type EditAlbumPayload = Partial<Omit<AlbumBasic, 'id'>> & { id: number };

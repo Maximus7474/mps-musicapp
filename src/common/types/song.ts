@@ -99,3 +99,24 @@ export type CreateAlbumPayload = {
 
 export type EditSongPayload = Partial<Omit<SongBasic, 'id'>> & { id: number };
 export type EditAlbumPayload = Partial<Omit<AlbumBasic, 'id'>> & { id: number };
+
+export type HomeScreenData = {
+  latestsongs: SongBasic[];
+  recentartists: ArtistBasic[];
+  recentplaylists: PlaylistRecap[];
+};
+
+export type LibraryData = {
+  artists: ArtistBasic[];
+  playlists: PlaylistBasic[];
+};
+
+/** Payload for `musicapp:likesong` (the broadcast uses { id, liked }). */
+export type LikeSongPayload = {
+  id: SongBasic['id'];
+  state: boolean;
+};
+
+export type LogStreamPayload = {
+  songId: SongBasic['id'];
+};

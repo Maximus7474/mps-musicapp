@@ -1,7 +1,7 @@
 {
-  "Identifier": "alerter",
+  "Identifier": "mps-musicapp",
   "DefaultApp": true,
-  "AppName": "Alerter",
-  "AppDescription": "In need of help ? Connect the app with familly and friends to send distress signals if you ever need help, includes accurate GPS positioning to guide them straight to you !",
-  "AppDeveloper": "LostAndFound Inc."
+  "AppName": "Beater",
+  "AppDescription": "Beater",
+  "AppDeveloper": "Beater Inc."
 }

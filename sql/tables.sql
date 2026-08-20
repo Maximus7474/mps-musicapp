@@ -23,11 +23,13 @@ CREATE TABLE IF NOT EXISTS `music_artists` (
   `genre` VARCHAR(64) NULL DEFAULT NULL,
   `verified` TINYINT(1) NOT NULL DEFAULT 0,
   `followers` INT UNSIGNED NOT NULL DEFAULT 0,
+  `bio` TEXT NULL DEFAULT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_artists_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- ALTER TABLE `music_artists` ADD COLUMN `bio` TEXT NULL DEFAULT NULL AFTER `followers`;
 
 CREATE TABLE IF NOT EXISTS `music_users` (
   `uuid` CHAR(36) NOT NULL,
@@ -48,4 +50,98 @@ CREATE TABLE IF NOT EXISTS `music_users` (
   CONSTRAINT `fk_users_artist` FOREIGN KEY (`artist_id`)
     REFERENCES `music_artists` (`id`)
     ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Content
+
+CREATE TABLE IF NOT EXISTS `music_songs` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `artist_id` INT UNSIGNED NOT NULL,
+  `name` VARCHAR(128) NOT NULL,
+  `author` VARCHAR(64) NOT NULL,
+  `url` VARCHAR(512) NOT NULL,
+  `image` VARCHAR(512) NULL DEFAULT NULL,
+  `duration` INT UNSIGNED NOT NULL DEFAULT 0,
+  `streams` INT UNSIGNED NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (`id`),
+  KEY `idx_songs_artist` (`artist_id`),
+
+  CONSTRAINT `fk_songs_artist` FOREIGN KEY (`artist_id`)
+    REFERENCES `music_artists` (`id`)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `music_albums` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `artist_id` INT UNSIGNED NOT NULL,
+  `name` VARCHAR(128) NOT NULL,
+  `image` VARCHAR(512) NULL DEFAULT NULL,
+  `year` VARCHAR(4) NULL DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (`id`),
+  KEY `idx_albums_artist` (`artist_id`),
+
+  CONSTRAINT `fk_albums_artist` FOREIGN KEY (`artist_id`)
+    REFERENCES `music_artists` (`id`)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `music_album_tracks` (
+  `album_id` INT UNSIGNED NOT NULL,
+  `song_id` INT UNSIGNED NOT NULL,
+  `position` INT UNSIGNED NOT NULL DEFAULT 0,
+
+  PRIMARY KEY (`album_id`, `song_id`),
+  KEY `idx_album_tracks_song` (`song_id`),
+
+  CONSTRAINT `fk_album_tracks_album` FOREIGN KEY (`album_id`)
+    REFERENCES `music_albums` (`id`)
+    ON DELETE CASCADE,
+  CONSTRAINT `fk_album_tracks_song` FOREIGN KEY (`song_id`)
+    REFERENCES `music_songs` (`id`)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `music_playlists` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(128) NOT NULL,
+  `image` VARCHAR(512) NULL DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `music_playlist_tracks` (
+  `playlist_id` INT UNSIGNED NOT NULL,
+  `song_id` INT UNSIGNED NOT NULL,
+  `position` INT UNSIGNED NOT NULL DEFAULT 0,
+
+  PRIMARY KEY (`playlist_id`, `song_id`),
+  KEY `idx_playlist_tracks_song` (`song_id`),
+
+  CONSTRAINT `fk_playlist_tracks_playlist` FOREIGN KEY (`playlist_id`)
+    REFERENCES `music_playlists` (`id`)
+    ON DELETE CASCADE,
+  CONSTRAINT `fk_playlist_tracks_song` FOREIGN KEY (`song_id`)
+    REFERENCES `music_songs` (`id`)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `music_song_likes` (
+  `user_uuid` CHAR(36) NOT NULL,
+  `song_id` INT UNSIGNED NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (`user_uuid`, `song_id`),
+  KEY `idx_song_likes_song` (`song_id`),
+
+  CONSTRAINT `fk_song_likes_user` FOREIGN KEY (`user_uuid`)
+    REFERENCES `music_users` (`uuid`)
+    ON DELETE CASCADE,
+  CONSTRAINT `fk_song_likes_song` FOREIGN KEY (`song_id`)
+    REFERENCES `music_songs` (`id`)
+    ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

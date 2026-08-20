@@ -1,16 +1,9 @@
 import { useCallback } from 'react';
 import { fetchNui } from '~/utils/fetchNui';
-import { useNuiEvent } from '~/hooks/useNuiEvent';
 import type { BasicResponse, SongBasic, SongLikedPayload } from '@common/types';
 import { debugData } from '~/utils/debugData';
 
 export function useSongLike(onSongLiked?: (songId: SongBasic['id'], isLiked: boolean) => void) {
-  useNuiEvent<SongLikedPayload>('musicapp:songliked', ({ id, liked }) => {
-    if (onSongLiked) {
-      onSongLiked(id, liked);
-    }
-  });
-
   const toggleLike = useCallback(
     async (songId: SongBasic['id'], currentState: boolean) => {
       const nextState = !currentState;

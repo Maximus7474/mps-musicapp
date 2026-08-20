@@ -149,6 +149,18 @@ export async function getOrCreateUser(src: number): Promise<AppUser | null> {
   }
 }
 
+/** Resolve the player's uuid (creating/loading their anon account if needed). */
+export async function getUserUuid(src: number): Promise<string | null> {
+  const user = await getOrCreateUser(src);
+  return user?.uuid ?? null;
+}
+
+/** Resolve the player's artist id, or null when they don't own an artist account. */
+export async function getArtistId(src: number): Promise<number | null> {
+  const user = await getOrCreateUser(src);
+  return user?.kind === 'artist' ? user.artistId : null;
+}
+
 export async function logoutUser(src: number): Promise<boolean> {
   const phonenumber = getPlayerPhone(src);
   if (!phonenumber) return false;

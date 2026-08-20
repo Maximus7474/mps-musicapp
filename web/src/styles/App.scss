@@ -13,7 +13,7 @@ html, body {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background-color: var(--bg-app, #12121a);
+  background-color: transparent !important;
 }
 
 body {

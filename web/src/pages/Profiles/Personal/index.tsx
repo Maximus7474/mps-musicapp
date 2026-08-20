@@ -1,6 +1,9 @@
 import { Music, Heart, Disc, Bell, Volume2, HardDrive, Shield, UserCircle2, ChevronRight } from 'lucide-react';
+import { useUser } from '~/hooks/useUser';
 
 export function ProfilePage() {
+  const { user, isLoading } = useUser();
+
   const stats = [
     { label: 'Liked', value: '248', icon: Heart },
     { label: 'Artists', value: '34', icon: Disc },
@@ -21,6 +24,28 @@ export function ProfilePage() {
         <button className='icon-button'>
           <UserCircle2 />
         </button>
+      </div>
+
+      <div className='setting-row' style={{ cursor: 'default' }}>
+        <div className='row-left'>
+          <div className='row-icon-box'>
+            <UserCircle2 size={18} className='icon' />
+          </div>
+          <div>
+            <p className='title'>
+              {isLoading
+                ? 'Loading…'
+                : user
+                  ? user.kind === 'anon'
+                    ? 'Guest'
+                    : `@${user.username}`
+                  : 'Not signed in'}
+            </p>
+            <p className='desc'>
+              {user?.kind === 'artist' ? 'Artist account' : user ? 'Signed in' : 'No identity resolved'}
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className='stats-card-group'>

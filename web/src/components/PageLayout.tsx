@@ -5,9 +5,11 @@ import { NowPlayingBar } from './NowPlaying';
 
 import './PageLayout.scss';
 
+const HIDE_PLAYING = ['/profile', '/studio'];
+
 export const PageLayout: React.FC = () => {
   const { pathname } = useLocation();
-  const showPlaying = pathname !== '/profile';
+  const showPlaying = !HIDE_PLAYING.includes(pathname);
 
   return (
     <div className='app-wrapper'>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft, Plus, Trash2, Check, Disc, Music, GripVertical } from 'lucide-react';
 import { fetchNui } from '~/utils/fetchNui';
 import { Image } from '~/components/ImageFallback';
+import { useUser } from '~/hooks/useUser';
 import type { SongBasic, AlbumBasic, SaveAlbumPayload } from '@common/types';
 
 interface AlbumEditorProps {
@@ -17,6 +18,7 @@ export const AlbumEditor: React.FC<AlbumEditorProps> = ({
   onSave,
   onCancel,
 }) => {
+  const { user } = useUser();
   const [name, setName] = useState(albumToEdit?.name || '');
   const [image, setImage] = useState(albumToEdit?.image || '');
   const [year, setYear] = useState<string>(albumToEdit?.year || (new Date().getFullYear()).toString());
@@ -56,6 +58,7 @@ export const AlbumEditor: React.FC<AlbumEditorProps> = ({
 
     setIsSubmitting(true);
 
+    // id is only sent for updates
     const payload: SaveAlbumPayload = {
       id: albumToEdit?.id,
       name,
@@ -69,11 +72,15 @@ export const AlbumEditor: React.FC<AlbumEditorProps> = ({
         albumToEdit ? 'musicapp:updateAlbum' : 'musicapp:createAlbum',
         payload,
         {
+          // Dev-mode mock: the server would attribute the id and author.
           id: albumToEdit?.id || `alb-${Date.now()}`,
           name: payload.name,
           image: payload.image,
           year: payload.year.toString(),
-          author: albumToEdit?.author || { name: 'Artist', id: 1 },
+          author: albumToEdit?.author ||
+            (user?.kind === 'artist'
+              ? { id: user.artistId, name: user.username }
+              : { id: 0, name: user?.kind === 'user' ? user.username : 'Artist' }),
           tracks: payload.tracks,
         }
       );

@@ -6,13 +6,16 @@ import { AlbumEditor } from './albumeditor';
 import type { AlbumListTabProps } from './types';
 
 export const AlbumListTab = ({ albums, songs, onSaveAlbum, onDeleteAlbum }: AlbumListTabProps) => {
-  const [editingAlbum, setEditingAlbum] = useState<AlbumBasic | null>(null);
+  // null = closed, 'new' = creating (server attributes id + author),
+  // AlbumBasic = editing an existing album
+  const [editingAlbum, setEditingAlbum] = useState<AlbumBasic | 'new' | null>(null);
+  const editorOpen = editingAlbum !== null;
 
   return (
     <div className='content-sections'>
-      {editingAlbum !== null ? (
+      {editorOpen ? (
         <AlbumEditor
-          albumToEdit={editingAlbum.id ? editingAlbum : null}
+          albumToEdit={editingAlbum === 'new' ? null : editingAlbum}
           availableSongs={songs}
           onCancel={() => setEditingAlbum(null)}
           onSave={(savedAlbum) => {
@@ -23,11 +26,7 @@ export const AlbumListTab = ({ albums, songs, onSaveAlbum, onDeleteAlbum }: Albu
       ) : (
         <>
           <div className='tab-action-bar'>
-            <button
-              className='btn-primary'
-              // ToDo: when implementing artist data, have it pull from that data to load author
-              onClick={() => setEditingAlbum({ id: '', name: '', image: '', year: `${new Date().getFullYear()}`, tracks: [], author: { name: '' } })}
-            >
+            <button className='btn-primary' onClick={() => setEditingAlbum('new')}>
               <Plus size={16} /> New Album
             </button>
           </div>

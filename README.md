@@ -2,6 +2,8 @@
 
 Beatr is a parody music application inspired by Deezer, taking inspiration from it's layout and colour palette it's built to offer various features to players to stream music in game.
 
+**This project NEEDS** a decent logo...
+
 > [!IMPORTANT]
 > Due to Cfx’s [Platform License Agreement](https://fivem.net/terms) and [YouTube’s Developer Policies](https://developers.google.com/youtube/terms/developer-policies#i.-additional-prohibitions), this application does not provide the ability to stream from YouTube.
 > This is because:

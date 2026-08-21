@@ -1,4 +1,5 @@
 import { RegisterServerCallback } from './utils/callbacks';
+import { registerAdminCommands } from './commands';
 import {
   getOrCreateUser,
   logoutUser,
@@ -164,3 +165,9 @@ RegisterServerCallback<boolean>('musicapp:deleteAlbum', async (src, data: { id: 
   if (!artistId) return false;
   return deleteAlbum(artistId, data.id);
 });
+
+// ---------------------------------------------------------------------------
+// Admin commands (ace: command.musicapp)
+// ---------------------------------------------------------------------------
+
+registerAdminCommands();

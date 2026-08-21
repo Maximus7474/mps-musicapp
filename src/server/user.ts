@@ -1,6 +1,6 @@
-import { randomUUID } from 'node:crypto';
+import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
 import { oxmysql } from '@communityox/oxmysql';
-import type { AppUser } from '@common/types';
+import type { AppUser, AuthResult } from '@common/types';
 
 /** The app identifier used in the shared `phone_logged_in_accounts` table. */
 const APP_ID = 'mps-musicapp';
@@ -10,6 +10,7 @@ interface MusicUserRow {
   uuid: string;
   phonenumber: string | null;
   username: string | null;
+  password: string | null;
   profile_pic: string | null;
   is_artist: number;
   artist_id: number | null;
@@ -50,8 +51,25 @@ function toAppUser(row: MusicUserRow, phonenumber: string): AppUser {
 }
 
 /** Columns selected for a music_users row. */
-const USER_SELECT = `SELECT uuid, phonenumber, username, profile_pic, is_artist, artist_id
+const USER_SELECT = `SELECT uuid, phonenumber, username, password, profile_pic, is_artist, artist_id
                        FROM music_users`;
+
+/** Hash a password for storage: `scrypt$<salt>$<hash>` (never plaintext). */
+function hashPassword(password: string): string {
+  const salt = randomBytes(16).toString('hex');
+  const hash = scryptSync(password, salt, 64).toString('hex');
+  return `scrypt$${salt}$${hash}`;
+}
+
+/** Constant-time password check against a stored `scrypt$<salt>$<hash>` value. */
+function verifyPassword(password: string, stored: string): boolean {
+  const [scheme, salt, hash] = stored.split('$');
+  if (scheme !== 'scrypt' || !salt || !hash) return false;
+
+  const candidate = scryptSync(password, salt, 64);
+  const expected = Buffer.from(hash, 'hex');
+  return candidate.length === expected.length && timingSafeEqual(candidate, expected);
+}
 
 /**
  * Get or create the partial anon account linked to a phone number.
@@ -77,7 +95,7 @@ async function ensureAnonUser(phonenumber: string): Promise<MusicUserRow | null>
       [uuid, phonenumber, phonenumber]
     );
 
-    return { uuid, phonenumber, username: phonenumber, profile_pic: null, is_artist: 0, artist_id: null };
+    return { uuid, phonenumber, username: phonenumber, password: null, profile_pic: null, is_artist: 0, artist_id: null };
   } catch (err) {
     // Race: another request created the row first, load the winner.
     console.warn('[music:user] Anon user insert raced, re-reading row.', err);
@@ -90,7 +108,12 @@ async function ensureAnonUser(phonenumber: string): Promise<MusicUserRow | null>
  * Ensure the phone's logged-in-accounts table carries an active session for
  * this app, so the identity survives reloads without creating duplicates.
  */
-async function ensureLoggedIn(phonenumber: string, username: string): Promise<void> {
+async function persistLogin(phonenumber: string, username: string): Promise<void> {
+  await oxmysql.update(
+    'UPDATE phone_logged_in_accounts SET username = ?, active = 1 WHERE phone_number = ? AND app = ?',
+    [username, phonenumber, APP_ID]
+  );
+
   await oxmysql.insert(
     `INSERT INTO phone_logged_in_accounts (phone_number, app, username, active)
      SELECT ?, ?, ?, 1
@@ -135,7 +158,7 @@ export async function getOrCreateUser(src: number): Promise<AppUser | null> {
       row = await ensureAnonUser(phonenumber);
 
       if (row) {
-        await ensureLoggedIn(phonenumber, row.username ?? phonenumber);
+        await persistLogin(phonenumber, row.username ?? phonenumber);
       }
     }
 
@@ -159,6 +182,76 @@ export async function getUserUuid(src: number): Promise<string | null> {
 export async function getArtistId(src: number): Promise<number | null> {
   const user = await getOrCreateUser(src);
   return user?.kind === 'artist' ? user.artistId : null;
+}
+
+export async function loginUser(src: number, username: string, password: string): Promise<AuthResult> {
+  const phonenumber = getPlayerPhone(src);
+  if (!phonenumber) return { success: false, message: 'Could not resolve your phone number' };
+
+  try {
+    const row = await oxmysql.single<MusicUserRow>(`${USER_SELECT} WHERE username = ?`, [username]);
+    if (!row) return { success: false, message: 'Account not found' };
+    if (!row.password) return { success: false, message: 'This account has no password set' };
+    if (!verifyPassword(password, row.password)) return { success: false, message: 'Incorrect password' };
+
+    await persistLogin(phonenumber, username);
+    await oxmysql.update('UPDATE music_users SET last_seen_at = CURRENT_TIMESTAMP WHERE uuid = ?', [row.uuid]);
+
+    return { success: true, user: toAppUser(row, phonenumber) };
+  } catch (err) {
+    console.error(`[music:user] Failed to login source ${src}:`, err);
+    return { success: false, message: 'Something went wrong, try again' };
+  }
+}
+
+/**
+ * Promote the player's anon account into a real account (chosen username +
+ * password). Reuses the phone-linked anon account, so likes/playlists are
+ * preserved across the anon -> user transition.
+ */
+export async function registerUser(src: number, username: string, password: string): Promise<AuthResult> {
+  const phonenumber = getPlayerPhone(src);
+  if (!phonenumber) return { success: false, message: 'Could not resolve your phone number' };
+
+  const clean = username.trim();
+  if (!/^[a-zA-Z0-9_.-]{3,32}$/.test(clean)) {
+    return { success: false, message: 'Username must be 3-32 characters: letters, numbers, . _ -' };
+  }
+  if (clean.toLowerCase() === phonenumber.toLowerCase()) {
+    return { success: false, message: 'That username is reserved' };
+  }
+  if (password.length < 6) {
+    return { success: false, message: 'Password must be at least 6 characters' };
+  }
+
+  try {
+    const taken = await oxmysql.single<{ username: string }>(
+      'SELECT username FROM music_users WHERE username = ?',
+      [clean]
+    );
+    if (taken) return { success: false, message: 'That username is already taken' };
+
+    const anon = await ensureAnonUser(phonenumber);
+    if (!anon) return { success: false, message: 'Could not resolve your identity' };
+
+    const updated = await oxmysql.update(
+      'UPDATE music_users SET username = ?, password = ? WHERE uuid = ?',
+      [clean, hashPassword(password), anon.uuid]
+    );
+    if (!updated) return { success: false, message: 'Something went wrong, try again' };
+
+    await persistLogin(phonenumber, clean);
+
+    const row = await oxmysql.single<MusicUserRow>(`${USER_SELECT} WHERE uuid = ?`, [anon.uuid]);
+    if (!row) return { success: false, message: 'Something went wrong, try again' };
+
+    await oxmysql.update('UPDATE music_users SET last_seen_at = CURRENT_TIMESTAMP WHERE uuid = ?', [anon.uuid]);
+    return { success: true, user: toAppUser(row, phonenumber) };
+  } catch (err) {
+    // Likely a race on the unique username key.
+    console.error(`[music:user] Failed to register source ${src}:`, err);
+    return { success: false, message: 'That username is already taken' };
+  }
 }
 
 export async function logoutUser(src: number): Promise<boolean> {

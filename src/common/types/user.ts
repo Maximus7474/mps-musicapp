@@ -11,3 +11,8 @@ export type AppUser =
   | { kind: 'anon'; uuid: string; profilePic?: string }
   | { kind: 'user'; uuid: string; username: string; profilePic?: string }
   | { kind: 'artist'; uuid: string; username: string; artistId: number; profilePic?: string };
+
+/** Result of a login/register attempt. */
+export type AuthResult =
+  | { success: true; user: AppUser }
+  | { success: false; message: string };

@@ -1,6 +1,7 @@
 import { triggerServerCallback } from './utils/callbacks';
 import type {
   AppUser,
+  AuthResult,
   AlbumBasic,
   ArtistProfile,
   HomeScreenData,
@@ -25,6 +26,20 @@ RegisterNuiCallback('musicapp:logout', async (_: unknown, cb: (done: boolean) =>
   const done = await triggerServerCallback<boolean>('musicapp:logout');
   cb(done);
 });
+
+RegisterNuiCallback(
+  'musicapp:login',
+  async (data: { username: string; password: string }, cb: (result: AuthResult) => void) => {
+    cb(await triggerServerCallback<AuthResult>('musicapp:login', data));
+  }
+);
+
+RegisterNuiCallback(
+  'musicapp:register',
+  async (data: { username: string; password: string }, cb: (result: AuthResult) => void) => {
+    cb(await triggerServerCallback<AuthResult>('musicapp:register', data));
+  }
+);
 
 // ---------------------------------------------------------------------------
 // Browse

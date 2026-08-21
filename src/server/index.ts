@@ -1,5 +1,5 @@
 import { RegisterServerCallback } from './utils/callbacks';
-import { getOrCreateUser, logoutUser, getUserUuid, getArtistId } from './user';
+import { getOrCreateUser, logoutUser, loginUser, registerUser, getUserUuid, getArtistId } from './user';
 import { getHomeScreenData, getLibraryData, getArtistProfile } from './library';
 import { getAlbum, listAlbumsByArtist, createAlbum, updateAlbum, deleteAlbum } from './albums';
 import { getPlaylist } from './playlists';
@@ -13,6 +13,7 @@ import {
 } from './songs';
 import type {
   AppUser,
+  AuthResult,
   BasicResponse,
   CreateSongPayload,
   EditSongPayload,
@@ -37,6 +38,14 @@ RegisterServerCallback<AppUser | null>('musicapp:getUser', async (src) => {
 
 RegisterServerCallback<boolean>('musicapp:logout', async (src) => {
   return logoutUser(src);
+});
+
+RegisterServerCallback<AuthResult>('musicapp:login', async (src, data: { username: string; password: string }) => {
+  return loginUser(src, data.username, data.password);
+});
+
+RegisterServerCallback<AuthResult>('musicapp:register', async (src, data: { username: string; password: string }) => {
+  return registerUser(src, data.username, data.password);
 });
 
 // ---------------------------------------------------------------------------

@@ -32,7 +32,7 @@ createBuilder(
       name: 'client',
       options: {
         platform: 'browser',
-        target: ['es2021'], 
+        target: ['es2021'],
         format: 'iife',
         dropLabels: [...dropLabels, '$SERVER'],
         external: ['shared'],
@@ -42,8 +42,8 @@ createBuilder(
   async (outfiles) => {
     const files = await getFiles('dist/web', 'static');
     await createFxmanifest({
-      client_scripts: [outfiles.client, 'bridge/utils.lua', 'bridge/**/client.lua'],
-      server_scripts: [outfiles.server, 'bridge/utils.lua', 'bridge/**/server.lua'],
+      client_scripts: [outfiles.client],
+      server_scripts: [outfiles.server],
       files: ['locales/*.json', ...files],
       dependencies: ['/server:13068', '/onesync'],
       metadata: {

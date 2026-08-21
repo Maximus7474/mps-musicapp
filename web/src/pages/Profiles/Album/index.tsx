@@ -11,7 +11,7 @@ import { useSongLike } from '~/hooks/useSongLike';
 import { LoadingPage, NotFoundPage } from '~/components/StatusPages';
 
 export const AlbumPage: React.FC = () => {
-  const { playSong } = useAudioPlayer();
+  const { playSong, queue } = useAudioPlayer();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const albumId = searchParams.get('albumId');
@@ -132,10 +132,10 @@ export const AlbumPage: React.FC = () => {
       </div>
 
       <div className='play-shuffle-row'>
-        <button className='btn-primary'>
+        <button className='btn-primary' onClick={() => queue.load(album.tracks, true)}>
           <PlayIcon /> Play
         </button>
-        <button className='btn-secondary'>
+        <button className='btn-secondary' onClick={() => queue.load(album.tracks, true, true)}>
           <ShuffleIcon /> Shuffle
         </button>
       </div>

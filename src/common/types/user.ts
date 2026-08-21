@@ -13,9 +13,7 @@ export type AppUser =
   | { kind: 'artist'; uuid: string; username: string; artistId: number; profilePic?: string };
 
 /** Result of a login/register attempt. */
-export type AuthResult =
-  | { success: true; user: AppUser }
-  | { success: false; message: string };
+export type AuthResult = { success: true; user: AppUser } | { success: false; message: string };
 
 /** Fields a signed-in user may edit on their own account. */
 export type UpdateProfilePayload = {

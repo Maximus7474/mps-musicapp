@@ -13,7 +13,11 @@ export function AccountRow({ user, onEdit, onLogout }: AccountRowProps) {
     <div className='setting-row' style={{ cursor: 'default' }}>
       <div className='row-left'>
         <div className='row-icon-box'>
-          {user.profilePic ? <img src={user.profilePic} alt='' className='avatar-img' /> : <UserCircle2 size={18} className='icon' />}
+          {user.profilePic ? (
+            <img src={user.profilePic} alt='' className='avatar-img' />
+          ) : (
+            <UserCircle2 size={18} className='icon' />
+          )}
         </div>
         <div>
           <p className='title'>{user.kind === 'artist' ? `Artist · @${user.username}` : `@${user.username}`}</p>

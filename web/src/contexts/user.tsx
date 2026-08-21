@@ -120,7 +120,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [refresh]);
 
   return (
-    <UserContext.Provider value={{ user, isLoading, refresh, login, register, logout, updateProfile, updateArtistProfile }}>
+    <UserContext.Provider
+      value={{ user, isLoading, refresh, login, register, logout, updateProfile, updateArtistProfile }}
+    >
       {children}
     </UserContext.Provider>
   );

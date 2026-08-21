@@ -12,16 +12,11 @@ interface AlbumEditorProps {
   onCancel: () => void;
 }
 
-export const AlbumEditor: React.FC<AlbumEditorProps> = ({
-  albumToEdit,
-  availableSongs,
-  onSave,
-  onCancel,
-}) => {
+export const AlbumEditor: React.FC<AlbumEditorProps> = ({ albumToEdit, availableSongs, onSave, onCancel }) => {
   const { user } = useUser();
   const [name, setName] = useState(albumToEdit?.name || '');
   const [image, setImage] = useState(albumToEdit?.image || '');
-  const [year, setYear] = useState<string>(albumToEdit?.year || (new Date().getFullYear()).toString());
+  const [year, setYear] = useState<string>(albumToEdit?.year || new Date().getFullYear().toString());
   const [albumTracks, setAlbumTracks] = useState<SongBasic[]>(albumToEdit?.tracks || []);
   const [selectedSongId, setSelectedSongId] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,12 +72,13 @@ export const AlbumEditor: React.FC<AlbumEditorProps> = ({
           name: payload.name,
           image: payload.image,
           year: payload.year.toString(),
-          author: albumToEdit?.author ||
+          author:
+            albumToEdit?.author ||
             (user?.kind === 'artist'
               ? { id: user.artistId, name: user.username }
               : { id: 0, name: user?.kind === 'user' ? user.username : 'Artist' }),
           tracks: payload.tracks,
-        }
+        },
       );
 
       onSave(savedAlbum);
@@ -131,11 +127,7 @@ export const AlbumEditor: React.FC<AlbumEditorProps> = ({
         <div className='form-group flex-1'>
           <label>Year</label>
           <div className='search-input-box'>
-            <input
-              type='number'
-              value={year}
-              onChange={(e) => setYear(e.target.value)}
-            />
+            <input type='number' value={year} onChange={(e) => setYear(e.target.value)} />
           </div>
         </div>
       </div>
@@ -159,11 +151,7 @@ export const AlbumEditor: React.FC<AlbumEditorProps> = ({
         {/* Add existing song dropdown */}
         <div className='add-track-selector'>
           <div className='search-input-box flex-1'>
-            <select
-              value={selectedSongId}
-              onChange={(e) => setSelectedSongId(e.target.value)}
-              className='select-input'
-            >
+            <select value={selectedSongId} onChange={(e) => setSelectedSongId(e.target.value)} className='select-input'>
               <option value=''>-- Select song from library --</option>
               {availableSongs
                 .filter((s) => !albumTracks.some((at) => at.id === s.id))
@@ -210,19 +198,13 @@ export const AlbumEditor: React.FC<AlbumEditorProps> = ({
                   ▼
                 </button>
               </div>
-              <button
-                type='button'
-                className='remove-btn'
-                onClick={() => handleRemoveTrack(index)}
-              >
+              <button type='button' className='remove-btn' onClick={() => handleRemoveTrack(index)}>
                 <Trash2 size={16} />
               </button>
             </div>
           ))}
 
-          {albumTracks.length === 0 && (
-            <p className='empty-subtext'>No tracks added to this album yet.</p>
-          )}
+          {albumTracks.length === 0 && <p className='empty-subtext'>No tracks added to this album yet.</p>}
         </div>
       </div>
 

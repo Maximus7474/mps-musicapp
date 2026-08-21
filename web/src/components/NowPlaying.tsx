@@ -229,11 +229,7 @@ export const NowPlayingBar = () => {
           )}
         </button>
 
-        <button
-          onClick={(e) => handleActionClick(e, playNext)}
-          disabled={!currentSong}
-          className='control-btn'
-        >
+        <button onClick={(e) => handleActionClick(e, playNext)} disabled={!currentSong} className='control-btn'>
           <ChevronRight size={18} />
         </button>
       </div>

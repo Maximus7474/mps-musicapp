@@ -87,7 +87,7 @@ export type SaveAlbumPayload = {
   image: string;
   year: string;
   tracks: SongBasic[];
-}
+};
 
 /** Client -> server create-album. The server attributes the id and author. */
 export type CreateAlbumPayload = {

@@ -33,23 +33,26 @@ RegisterNuiCallback(
   'musicapp:login',
   async (data: { username: string; password: string }, cb: (result: AuthResult) => void) => {
     cb(await triggerServerCallback<AuthResult>('musicapp:login', data));
-  }
+  },
 );
 
 RegisterNuiCallback(
   'musicapp:register',
   async (data: { username: string; password: string }, cb: (result: AuthResult) => void) => {
     cb(await triggerServerCallback<AuthResult>('musicapp:register', data));
-  }
+  },
 );
 
 RegisterNuiCallback('musicapp:updateProfile', async (data: UpdateProfilePayload, cb: (result: AuthResult) => void) => {
   cb(await triggerServerCallback<AuthResult>('musicapp:updateProfile', data));
 });
 
-RegisterNuiCallback('musicapp:updateArtistProfile', async (data: UpdateArtistPayload, cb: (result: BasicResponse) => void) => {
-  cb(await triggerServerCallback<BasicResponse>('musicapp:updateArtistProfile', data));
-});
+RegisterNuiCallback(
+  'musicapp:updateArtistProfile',
+  async (data: UpdateArtistPayload, cb: (result: BasicResponse) => void) => {
+    cb(await triggerServerCallback<BasicResponse>('musicapp:updateArtistProfile', data));
+  },
+);
 
 // ---------------------------------------------------------------------------
 // Browse
@@ -63,25 +66,37 @@ RegisterNuiCallback('musicapp:fetchlibrary', async (_: unknown, cb: (data: Libra
   cb(await triggerServerCallback<LibraryData>('musicapp:fetchlibrary'));
 });
 
-RegisterNuiCallback('musicapp:fetchartist', async (data: { id: number }, cb: (artist: ArtistProfile | null) => void) => {
-  cb(await triggerServerCallback<ArtistProfile | null>('musicapp:fetchartist', data));
-});
+RegisterNuiCallback(
+  'musicapp:fetchartist',
+  async (data: { id: number }, cb: (artist: ArtistProfile | null) => void) => {
+    cb(await triggerServerCallback<ArtistProfile | null>('musicapp:fetchartist', data));
+  },
+);
 
-RegisterNuiCallback('musicapp:fetchalbum', async (data: { id: string | number }, cb: (album: AlbumBasic | null) => void) => {
-  cb(await triggerServerCallback<AlbumBasic | null>('musicapp:fetchalbum', data));
-});
+RegisterNuiCallback(
+  'musicapp:fetchalbum',
+  async (data: { id: string | number }, cb: (album: AlbumBasic | null) => void) => {
+    cb(await triggerServerCallback<AlbumBasic | null>('musicapp:fetchalbum', data));
+  },
+);
 
-RegisterNuiCallback('musicapp:fetchplaylist', async (data: { id: number }, cb: (playlist: PlaylistBasic | null) => void) => {
-  cb(await triggerServerCallback<PlaylistBasic | null>('musicapp:fetchplaylist', data));
-});
+RegisterNuiCallback(
+  'musicapp:fetchplaylist',
+  async (data: { id: number }, cb: (playlist: PlaylistBasic | null) => void) => {
+    cb(await triggerServerCallback<PlaylistBasic | null>('musicapp:fetchplaylist', data));
+  },
+);
 
 // ---------------------------------------------------------------------------
 // Likes / streams
 // ---------------------------------------------------------------------------
 
-RegisterNuiCallback('musicapp:likesong', async (data: { id: number; state: boolean }, cb: (result: BasicResponse) => void) => {
-  cb(await triggerServerCallback<BasicResponse>('musicapp:likesong', data));
-});
+RegisterNuiCallback(
+  'musicapp:likesong',
+  async (data: { id: number; state: boolean }, cb: (result: BasicResponse) => void) => {
+    cb(await triggerServerCallback<BasicResponse>('musicapp:likesong', data));
+  },
+);
 
 RegisterNuiCallback('musicapp:logstream', async (data: { songId: number }, cb: (done: boolean) => void) => {
   cb(await triggerServerCallback<boolean>('musicapp:logstream', data));

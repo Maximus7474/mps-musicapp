@@ -90,12 +90,21 @@ async function ensureAnonUser(phonenumber: string): Promise<MusicUserRow | null>
   const uuid = randomUUID();
 
   try {
-    await oxmysql.insert(
-      'INSERT INTO music_users (uuid, phonenumber, username) VALUES (?, ?, ?)',
-      [uuid, phonenumber, phonenumber]
-    );
+    await oxmysql.insert('INSERT INTO music_users (uuid, phonenumber, username) VALUES (?, ?, ?)', [
+      uuid,
+      phonenumber,
+      phonenumber,
+    ]);
 
-    return { uuid, phonenumber, username: phonenumber, password: null, profile_pic: null, is_artist: 0, artist_id: null };
+    return {
+      uuid,
+      phonenumber,
+      username: phonenumber,
+      password: null,
+      profile_pic: null,
+      is_artist: 0,
+      artist_id: null,
+    };
   } catch (err) {
     // Race: another request created the row first, load the winner.
     console.warn('[music:user] Anon user insert raced, re-reading row.', err);
@@ -111,7 +120,7 @@ async function ensureAnonUser(phonenumber: string): Promise<MusicUserRow | null>
 async function persistLogin(phonenumber: string, username: string): Promise<void> {
   await oxmysql.update(
     'UPDATE phone_logged_in_accounts SET username = ?, active = 1 WHERE phone_number = ? AND app = ?',
-    [username, phonenumber, APP_ID]
+    [username, phonenumber, APP_ID],
   );
 
   await oxmysql.insert(
@@ -121,7 +130,7 @@ async function persistLogin(phonenumber: string, username: string): Promise<void
         SELECT 1 FROM phone_logged_in_accounts
          WHERE phone_number = ? AND app = ?
       )`,
-    [phonenumber, APP_ID, username, phonenumber, APP_ID]
+    [phonenumber, APP_ID, username, phonenumber, APP_ID],
   );
 }
 
@@ -140,16 +149,13 @@ export async function getOrCreateUser(src: number): Promise<AppUser | null> {
          FROM phone_logged_in_accounts
         WHERE phone_number = ? AND app = ? AND active = 1
         LIMIT 1`,
-      [phonenumber, APP_ID]
+      [phonenumber, APP_ID],
     );
 
     let row: MusicUserRow | null = null;
 
     if (loggedIn?.username) {
-      row = await oxmysql.single<MusicUserRow>(
-        `${USER_SELECT} WHERE username = ?`,
-        [loggedIn.username]
-      );
+      row = await oxmysql.single<MusicUserRow>(`${USER_SELECT} WHERE username = ?`, [loggedIn.username]);
     }
 
     // No active login: reuse the anon account linked to this phone (if any) or
@@ -225,19 +231,19 @@ export async function registerUser(src: number, username: string, password: stri
   }
 
   try {
-    const taken = await oxmysql.single<{ username: string }>(
-      'SELECT username FROM music_users WHERE username = ?',
-      [clean]
-    );
+    const taken = await oxmysql.single<{ username: string }>('SELECT username FROM music_users WHERE username = ?', [
+      clean,
+    ]);
     if (taken) return { success: false, message: 'That username is already taken' };
 
     const anon = await ensureAnonUser(phonenumber);
     if (!anon) return { success: false, message: 'Could not resolve your identity' };
 
-    const updated = await oxmysql.update(
-      'UPDATE music_users SET username = ?, password = ? WHERE uuid = ?',
-      [clean, hashPassword(password), anon.uuid]
-    );
+    const updated = await oxmysql.update('UPDATE music_users SET username = ?, password = ? WHERE uuid = ?', [
+      clean,
+      hashPassword(password),
+      anon.uuid,
+    ]);
     if (!updated) return { success: false, message: 'Something went wrong, try again' };
 
     await persistLogin(phonenumber, clean);
@@ -259,10 +265,10 @@ export async function logoutUser(src: number): Promise<boolean> {
   if (!phonenumber) return false;
 
   try {
-    await oxmysql.update(
-      'DELETE FROM phone_logged_in_accounts WHERE phone_number = ? AND app = ?',
-      [phonenumber, APP_ID]
-    );
+    await oxmysql.update('DELETE FROM phone_logged_in_accounts WHERE phone_number = ? AND app = ?', [
+      phonenumber,
+      APP_ID,
+    ]);
     return true;
   } catch (err) {
     console.error(`[music:user] Failed to logout source ${src}:`, err);
@@ -295,7 +301,7 @@ export async function updateProfile(src: number, payload: UpdateProfilePayload):
     if (username !== undefined && username !== current.username) {
       const taken = await oxmysql.single<{ username: string }>(
         'SELECT username FROM music_users WHERE username = ? AND uuid != ?',
-        [username, current.uuid]
+        [username, current.uuid],
       );
       if (taken) return { success: false, message: 'That username is already taken' };
     }
@@ -352,10 +358,10 @@ export async function updateArtistProfile(src: number, payload: UpdateArtistPayl
 
   try {
     if (name !== undefined) {
-      const taken = await oxmysql.single<{ id: number }>(
-        'SELECT id FROM music_artists WHERE name = ? AND id != ?',
-        [name, artistId]
-      );
+      const taken = await oxmysql.single<{ id: number }>('SELECT id FROM music_artists WHERE name = ? AND id != ?', [
+        name,
+        artistId,
+      ]);
       if (taken) return { success: false, message: 'An artist with that name already exists' };
     }
 

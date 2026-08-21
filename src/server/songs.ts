@@ -35,28 +35,26 @@ function toSongBasic(row: SongRow): SongBasic {
 
 /** The artist's own tracks (Studio song list). */
 export async function listSongsByArtist(uuid: string | null, artistId: number): Promise<SongBasic[]> {
-  const rows = await oxmysql.query<SongRow[]>(
-    `${SONG_SELECT} WHERE s.artist_id = ? ORDER BY s.created_at DESC`,
-    [uuid, artistId]
-  );
+  const rows = await oxmysql.query<SongRow[]>(`${SONG_SELECT} WHERE s.artist_id = ? ORDER BY s.created_at DESC`, [
+    uuid,
+    artistId,
+  ]);
   return rows.map(toSongBasic);
 }
 
 /** Latest added songs (home screen). */
 export async function getLatestSongs(uuid: string | null, limit: number): Promise<SongBasic[]> {
-  const rows = await oxmysql.query<SongRow[]>(
-    `${SONG_SELECT} ORDER BY s.created_at DESC LIMIT ?`,
-    [uuid, limit]
-  );
+  const rows = await oxmysql.query<SongRow[]>(`${SONG_SELECT} ORDER BY s.created_at DESC LIMIT ?`, [uuid, limit]);
   return rows.map(toSongBasic);
 }
 
 /** An artist's most streamed tracks (artist profile). */
 export async function getTopTracks(uuid: string | null, artistId: number, limit: number): Promise<SongBasic[]> {
-  const rows = await oxmysql.query<SongRow[]>(
-    `${SONG_SELECT} WHERE s.artist_id = ? ORDER BY s.streams DESC LIMIT ?`,
-    [uuid, artistId, limit]
-  );
+  const rows = await oxmysql.query<SongRow[]>(`${SONG_SELECT} WHERE s.artist_id = ? ORDER BY s.streams DESC LIMIT ?`, [
+    uuid,
+    artistId,
+    limit,
+  ]);
   return rows.map(toSongBasic);
 }
 
@@ -72,7 +70,7 @@ export async function getSongsByAlbum(uuid: string | null, albumId: number): Pro
     `${SONG_SELECT}
       JOIN music_album_tracks at ON at.song_id = s.id AND at.album_id = ?
      ORDER BY at.position ASC`,
-    [uuid, albumId]
+    [uuid, albumId],
   );
   return rows.map(toSongBasic);
 }
@@ -83,7 +81,7 @@ export async function getSongsByPlaylist(uuid: string | null, playlistId: number
     `${SONG_SELECT}
       JOIN music_playlist_tracks pt ON pt.song_id = s.id AND pt.playlist_id = ?
      ORDER BY pt.position ASC`,
-    [uuid, playlistId]
+    [uuid, playlistId],
   );
   return rows.map(toSongBasic);
 }
@@ -93,7 +91,7 @@ export async function createSong(artistId: number, payload: CreateSongPayload): 
   try {
     const id = await oxmysql.insert<number>(
       'INSERT INTO music_songs (artist_id, name, author, url, image, duration) VALUES (?, ?, ?, ?, ?, ?)',
-      [artistId, payload.name, payload.author, payload.url, payload.image ?? null, payload.duration ?? 0]
+      [artistId, payload.name, payload.author, payload.url, payload.image ?? null, payload.duration ?? 0],
     );
 
     return {
@@ -112,12 +110,16 @@ export async function createSong(artistId: number, payload: CreateSongPayload): 
 }
 
 /** Update a song, only if it belongs to the given artist. */
-export async function updateSong(uuid: string | null, artistId: number, payload: EditSongPayload): Promise<SongBasic | null> {
+export async function updateSong(
+  uuid: string | null,
+  artistId: number,
+  payload: EditSongPayload,
+): Promise<SongBasic | null> {
   const affected = await oxmysql.update<number>(
     `UPDATE music_songs
         SET name = ?, author = ?, url = ?, image = ?, duration = ?
       WHERE id = ? AND artist_id = ?`,
-    [payload.name, payload.author, payload.url, payload.image ?? null, payload.duration ?? 0, payload.id, artistId]
+    [payload.name, payload.author, payload.url, payload.image ?? null, payload.duration ?? 0, payload.id, artistId],
   );
 
   if (affected < 1) return null;
@@ -126,19 +128,18 @@ export async function updateSong(uuid: string | null, artistId: number, payload:
 
 /** Delete a song, only if it belongs to the given artist. */
 export async function deleteSong(artistId: number, songId: number): Promise<boolean> {
-  const affected = await oxmysql.update<number>(
-    'DELETE FROM music_songs WHERE id = ? AND artist_id = ?',
-    [songId, artistId]
-  );
+  const affected = await oxmysql.update<number>('DELETE FROM music_songs WHERE id = ? AND artist_id = ?', [
+    songId,
+    artistId,
+  ]);
   return affected > 0;
 }
 
 /** Set (or clear) a user's like on a song. Returns false when the song is unknown. */
 export async function toggleLike(uuid: string, songId: number, liked: boolean): Promise<boolean> {
-  const exists = await oxmysql.single<{ total: number }>(
-    'SELECT COUNT(*) AS total FROM music_songs WHERE id = ?',
-    [songId]
-  );
+  const exists = await oxmysql.single<{ total: number }>('SELECT COUNT(*) AS total FROM music_songs WHERE id = ?', [
+    songId,
+  ]);
   if (!exists || Number(exists.total) < 1) return false;
 
   if (liked) {

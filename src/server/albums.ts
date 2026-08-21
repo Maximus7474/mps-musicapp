@@ -38,10 +38,9 @@ export async function getAlbum(uuid: string | null, albumId: number): Promise<Al
 
 /** Albums owned by an artist (Studio album list / artist profile). */
 export async function listAlbumsByArtist(uuid: string | null, artistId: number): Promise<AlbumBasic[]> {
-  const rows = await oxmysql.query<AlbumRow[]>(
-    `${ALBUM_SELECT} WHERE a.artist_id = ? ORDER BY a.created_at DESC`,
-    [artistId]
-  );
+  const rows = await oxmysql.query<AlbumRow[]>(`${ALBUM_SELECT} WHERE a.artist_id = ? ORDER BY a.created_at DESC`, [
+    artistId,
+  ]);
 
   const albums: AlbumBasic[] = [];
   for (const row of rows) {
@@ -62,17 +61,18 @@ async function setAlbumTracks(albumId: number, tracks: SongBasic[], artistId: nu
   const placeholders = tracks.map(() => '?').join(', ');
   const owned = await oxmysql.query<{ id: number }[]>(
     `SELECT id FROM music_songs WHERE id IN (${placeholders}) AND artist_id = ?`,
-    [...tracks.map((t) => t.id), artistId]
+    [...tracks.map((t) => t.id), artistId],
   );
   const ownedIds = new Set(owned.map((r) => r.id));
 
   let position = 0;
   for (const track of tracks) {
     if (ownedIds.has(track.id)) {
-      await oxmysql.insert(
-        'INSERT INTO music_album_tracks (album_id, song_id, position) VALUES (?, ?, ?)',
-        [albumId, track.id, position++]
-      );
+      await oxmysql.insert('INSERT INTO music_album_tracks (album_id, song_id, position) VALUES (?, ?, ?)', [
+        albumId,
+        track.id,
+        position++,
+      ]);
     }
   }
 }
@@ -82,7 +82,7 @@ export async function createAlbum(artistId: number, payload: SaveAlbumPayload): 
   try {
     const id = await oxmysql.insert<number>(
       'INSERT INTO music_albums (artist_id, name, image, year) VALUES (?, ?, ?, ?)',
-      [artistId, payload.name, payload.image, payload.year]
+      [artistId, payload.name, payload.image, payload.year],
     );
 
     await setAlbumTracks(id, payload.tracks, artistId);
@@ -94,12 +94,16 @@ export async function createAlbum(artistId: number, payload: SaveAlbumPayload): 
 }
 
 /** Update an album, only if it belongs to the given artist. */
-export async function updateAlbum(uuid: string | null, artistId: number, payload: SaveAlbumPayload & { id: string }): Promise<AlbumBasic | null> {
+export async function updateAlbum(
+  uuid: string | null,
+  artistId: number,
+  payload: SaveAlbumPayload & { id: string },
+): Promise<AlbumBasic | null> {
   const albumId = Number(payload.id);
 
   const affected = await oxmysql.update<number>(
     `UPDATE music_albums SET name = ?, image = ?, year = ? WHERE id = ? AND artist_id = ?`,
-    [payload.name, payload.image, payload.year, albumId, artistId]
+    [payload.name, payload.image, payload.year, albumId, artistId],
   );
 
   if (affected < 1) return null;
@@ -110,9 +114,9 @@ export async function updateAlbum(uuid: string | null, artistId: number, payload
 
 /** Delete an album, only if it belongs to the given artist. */
 export async function deleteAlbum(artistId: number, albumId: string | number): Promise<boolean> {
-  const affected = await oxmysql.update<number>(
-    'DELETE FROM music_albums WHERE id = ? AND artist_id = ?',
-    [Number(albumId), artistId]
-  );
+  const affected = await oxmysql.update<number>('DELETE FROM music_albums WHERE id = ? AND artist_id = ?', [
+    Number(albumId),
+    artistId,
+  ]);
   return affected > 0;
 }

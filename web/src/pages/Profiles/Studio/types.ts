@@ -1,4 +1,4 @@
-import type { AlbumBasic, SongBasic } from "@common/types";
+import type { AlbumBasic, SongBasic } from '@common/types';
 
 export type SongFormPayload = {
   id?: number;

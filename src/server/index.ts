@@ -13,14 +13,7 @@ import {
 import { getHomeScreenData, getLibraryData, getArtistProfile } from './library';
 import { getAlbum, listAlbumsByArtist, createAlbum, updateAlbum, deleteAlbum } from './albums';
 import { getPlaylist } from './playlists';
-import {
-  listSongsByArtist,
-  createSong,
-  updateSong,
-  deleteSong,
-  toggleLike,
-  logStream,
-} from './songs';
+import { listSongsByArtist, createSong, updateSong, deleteSong, toggleLike, logStream } from './songs';
 import type {
   AppUser,
   AuthResult,
@@ -154,11 +147,14 @@ RegisterServerCallback<AlbumBasic | null>('musicapp:createAlbum', async (src, da
   return createAlbum(artistId, data);
 });
 
-RegisterServerCallback<AlbumBasic | null>('musicapp:updateAlbum', async (src, data: SaveAlbumPayload & { id: string }) => {
-  const artistId = await getArtistId(src);
-  if (!artistId) return null;
-  return updateAlbum(await getUserUuid(src), artistId, data);
-});
+RegisterServerCallback<AlbumBasic | null>(
+  'musicapp:updateAlbum',
+  async (src, data: SaveAlbumPayload & { id: string }) => {
+    const artistId = await getArtistId(src);
+    if (!artistId) return null;
+    return updateAlbum(await getUserUuid(src), artistId, data);
+  },
+);
 
 RegisterServerCallback<boolean>('musicapp:deleteAlbum', async (src, data: { id: string | number }) => {
   const artistId = await getArtistId(src);

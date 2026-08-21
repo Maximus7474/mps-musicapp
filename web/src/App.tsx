@@ -4,7 +4,16 @@ import Frame from './components/dev/Frame';
 import { Routes, Route } from 'react-router-dom';
 import ThemeToggler from './components/dev/Theming';
 import { PageLayout } from './components/PageLayout';
-import { AlbumPage, ArtistPage, ArtistStudioPage, HomePage, LibraryPage, PlaylistPage, ProfilePage, SearchPage } from './pages';
+import {
+  AlbumPage,
+  ArtistPage,
+  ArtistStudioPage,
+  HomePage,
+  LibraryPage,
+  PlaylistPage,
+  ProfilePage,
+  SearchPage,
+} from './pages';
 
 import './styles/App.scss';
 import './pages/pages.scss';

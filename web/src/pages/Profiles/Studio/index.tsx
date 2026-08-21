@@ -87,7 +87,7 @@ export const ArtistStudioPage: React.FC<ArtistStudioPageProps> = ({ onBack }) =>
     setAlbums((prev) =>
       prev.some((a) => a.id === savedAlbum.id)
         ? prev.map((a) => (a.id === savedAlbum.id ? savedAlbum : a))
-        : [savedAlbum, ...prev]
+        : [savedAlbum, ...prev],
     );
   };
 
@@ -136,12 +136,7 @@ export const ArtistStudioPage: React.FC<ArtistStudioPageProps> = ({ onBack }) =>
       )}
 
       {activeTab === 'albums' && (
-        <AlbumListTab
-          albums={albums}
-          songs={songs}
-          onSaveAlbum={handleSaveAlbum}
-          onDeleteAlbum={handleDeleteAlbum}
-        />
+        <AlbumListTab albums={albums} songs={songs} onSaveAlbum={handleSaveAlbum} onDeleteAlbum={handleDeleteAlbum} />
       )}
 
       {activeTab === 'add' && (

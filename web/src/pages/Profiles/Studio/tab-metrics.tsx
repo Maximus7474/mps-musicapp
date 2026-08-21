@@ -1,4 +1,4 @@
-import { TrendingUp } from "lucide-react"
+import { TrendingUp } from 'lucide-react';
 
 export const MetricsTab = () => {
   return (
@@ -8,7 +8,7 @@ export const MetricsTab = () => {
         <p>Metrics coming soon.</p>
       </div>
     </div>
-  )
+  );
 
   // return (
   //   <div className='metrics-tab-content'>
@@ -55,4 +55,4 @@ export const MetricsTab = () => {
   //     </div>
   //   </div>
   // )
-}
+};

@@ -38,7 +38,9 @@ export const AlbumListTab = ({ albums, songs, onSaveAlbum, onDeleteAlbum }: Albu
                   <Image src={album.image || ''} alt={album.name} className='cover' />
                   <div className='details'>
                     <p className='title'>{album.name}</p>
-                    <p className='meta'>{album.year} • {album.tracks.length} Tracks</p>
+                    <p className='meta'>
+                      {album.year} • {album.tracks.length} Tracks
+                    </p>
                   </div>
                   <div className='card-actions'>
                     <button className='icon-button-sm' onClick={() => setEditingAlbum(album)}>

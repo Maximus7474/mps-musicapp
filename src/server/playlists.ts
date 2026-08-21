@@ -33,16 +33,14 @@ export async function listPlaylists(): Promise<PlaylistBasic[]> {
 
 /** Most recent playlists with track counts (home screen). */
 export async function listRecentPlaylists(limit: number): Promise<PlaylistRecap[]> {
-  const rows = await oxmysql.query<
-    Array<{ id: number; title: string; image: string | null; track_count: number }>
-  >(
+  const rows = await oxmysql.query<Array<{ id: number; title: string; image: string | null; track_count: number }>>(
     `SELECT p.id, p.title, p.image, COUNT(pt.song_id) AS track_count
        FROM music_playlists p
        LEFT JOIN music_playlist_tracks pt ON pt.playlist_id = p.id
       GROUP BY p.id
       ORDER BY p.id DESC
       LIMIT ?`,
-    [limit]
+    [limit],
   );
 
   return rows.map((row) => ({

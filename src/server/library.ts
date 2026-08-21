@@ -20,10 +20,7 @@ const ARTIST_SELECT = `
 
 /** Top artists by followers. */
 export async function listArtists(limit: number): Promise<ArtistBasic[]> {
-  const rows = await oxmysql.query<ArtistRow[]>(
-    `${ARTIST_SELECT} ORDER BY followers DESC LIMIT ?`,
-    [limit]
-  );
+  const rows = await oxmysql.query<ArtistRow[]>(`${ARTIST_SELECT} ORDER BY followers DESC LIMIT ?`, [limit]);
 
   return rows.map((row) => ({
     id: row.id,
@@ -77,10 +74,10 @@ export async function getArtistProfile(uuid: string | null, artistId: number): P
 }
 
 async function listRelatedArtists(artistId: number, limit: number): Promise<ArtistBasic[]> {
-  const rows = await oxmysql.query<ArtistRow[]>(
-    `${ARTIST_SELECT} WHERE id != ? ORDER BY followers DESC LIMIT ?`,
-    [artistId, limit]
-  );
+  const rows = await oxmysql.query<ArtistRow[]>(`${ARTIST_SELECT} WHERE id != ? ORDER BY followers DESC LIMIT ?`, [
+    artistId,
+    limit,
+  ]);
 
   return rows.map((row) => ({
     id: row.id,

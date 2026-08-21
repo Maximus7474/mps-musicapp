@@ -16,7 +16,7 @@ export function EditProfileCard({ user, updateProfile, updateArtistProfile, onCa
   const [editProfilePic, setEditProfilePic] = useState(user.profilePic ?? '');
   const [editArtistName, setEditArtistName] = useState(devMode && user.kind === 'artist' ? 'Nova Eclipse' : '');
   const [editArtistBio, setEditArtistBio] = useState(
-    devMode && user.kind === 'artist' ? 'Your favorite underground producer.' : ''
+    devMode && user.kind === 'artist' ? 'Your favorite underground producer.' : '',
   );
   const [editArtistImage, setEditArtistImage] = useState('');
   const [editError, setEditError] = useState<string | null>(null);

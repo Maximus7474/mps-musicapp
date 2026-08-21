@@ -1,0 +1,13 @@
+- [ ] Search feature
+- [ ] See all buttons are not linked to appropriate pages
+- [ ] Follow artist system does not work
+- [ ] liked songs" page - profile stat hard coded
+- [ ] Save album
+- [ ] Create/Edit playlists
+- [ ] Listening history / Recently played
+- [ ] Metrics tab for artists
+- [ ] Content moderation
+- [ ] Profile settings are static, no interactions (preferences, notifications, ...)
+- [ ] Context menu for songs (options: add to playlist, add to queue, etc...)
+- [ ] Related artists system
+- [ ] Application localization

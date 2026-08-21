@@ -1,6 +1,6 @@
 import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
 import { oxmysql } from '@communityox/oxmysql';
-import type { AppUser, AuthResult } from '@common/types';
+import type { AppUser, AuthResult, BasicResponse, UpdateArtistPayload, UpdateProfilePayload } from '@common/types';
 
 /** The app identifier used in the shared `phone_logged_in_accounts` table. */
 const APP_ID = 'mps-musicapp';
@@ -267,5 +267,121 @@ export async function logoutUser(src: number): Promise<boolean> {
   } catch (err) {
     console.error(`[music:user] Failed to logout source ${src}:`, err);
     return false;
+  }
+}
+
+export async function updateProfile(src: number, payload: UpdateProfilePayload): Promise<AuthResult> {
+  const phonenumber = getPlayerPhone(src);
+  if (!phonenumber) return { success: false, message: 'Could not resolve your phone number' };
+
+  const username = payload.username?.trim();
+  const profilePic = payload.profilePic?.trim();
+
+  if (username !== undefined) {
+    if (!/^[a-zA-Z0-9_.-]{3,32}$/.test(username)) {
+      return { success: false, message: 'Username must be 3-32 characters: letters, numbers, . _ -' };
+    }
+    if (username.toLowerCase() === phonenumber.toLowerCase()) {
+      return { success: false, message: 'That username is reserved' };
+    }
+  }
+
+  try {
+    // Resolve the current identity first, then validate the new username.
+    const current = await getOrCreateUser(src);
+    if (!current) return { success: false, message: 'Could not resolve your identity' };
+    if (current.kind === 'anon') return { success: false, message: 'Create an account before editing your profile' };
+
+    if (username !== undefined && username !== current.username) {
+      const taken = await oxmysql.single<{ username: string }>(
+        'SELECT username FROM music_users WHERE username = ? AND uuid != ?',
+        [username, current.uuid]
+      );
+      if (taken) return { success: false, message: 'That username is already taken' };
+    }
+
+    const sets: string[] = [];
+    const params: (string | null)[] = [];
+    if (username !== undefined && username !== current.username) {
+      sets.push('username = ?');
+      params.push(username);
+    }
+    if (profilePic !== undefined) {
+      sets.push('profile_pic = ?');
+      params.push(profilePic || null);
+    }
+
+    if (sets.length > 0) {
+      params.push(current.uuid);
+      await oxmysql.update(`UPDATE music_users SET ${sets.join(', ')} WHERE uuid = ?`, params);
+
+      // Keep the auto-login session in sync when the username changes.
+      if (username !== undefined && username !== current.username) {
+        await persistLogin(phonenumber, username);
+      }
+    }
+
+    const updated = await oxmysql.single<MusicUserRow>(`${USER_SELECT} WHERE uuid = ?`, [current.uuid]);
+    if (!updated) return { success: false, message: 'Something went wrong, try again' };
+
+    return { success: true, user: toAppUser(updated, phonenumber) };
+  } catch (err) {
+    console.error(`[music:user] Failed to update profile for source ${src}:`, err);
+    return { success: false, message: 'Something went wrong, try again' };
+  }
+}
+
+/**
+ * Let an artist update their own artist profile (name / bio / picture).
+ * Requires the caller to own an artist account (artist_id set on their user).
+ */
+export async function updateArtistProfile(src: number, payload: UpdateArtistPayload): Promise<BasicResponse> {
+  const artistId = await getArtistId(src);
+  if (!artistId) return { success: false, message: 'No artist account linked to this user' };
+
+  const name = payload.name?.trim();
+  const bio = payload.bio?.trim();
+  const image = payload.image?.trim();
+
+  if (name !== undefined && (name.length === 0 || name.length > 64)) {
+    return { success: false, message: 'Artist name must be 1-64 characters' };
+  }
+  if (image !== undefined && image.length > 512) {
+    return { success: false, message: 'Image URL is too long' };
+  }
+
+  try {
+    if (name !== undefined) {
+      const taken = await oxmysql.single<{ id: number }>(
+        'SELECT id FROM music_artists WHERE name = ? AND id != ?',
+        [name, artistId]
+      );
+      if (taken) return { success: false, message: 'An artist with that name already exists' };
+    }
+
+    const sets: string[] = [];
+    const params: (string | null)[] = [];
+    if (name !== undefined) {
+      sets.push('name = ?');
+      params.push(name);
+    }
+    if (bio !== undefined) {
+      sets.push('bio = ?');
+      params.push(bio || null);
+    }
+    if (image !== undefined) {
+      sets.push('image = ?');
+      params.push(image || null);
+    }
+
+    if (sets.length > 0) {
+      params.push(String(artistId));
+      await oxmysql.update(`UPDATE music_artists SET ${sets.join(', ')} WHERE id = ?`, params);
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error(`[music:user] Failed to update artist ${artistId}:`, err);
+    return { success: false, message: 'Something went wrong, try again' };
   }
 }

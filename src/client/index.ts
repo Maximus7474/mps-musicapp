@@ -9,6 +9,8 @@ import type {
   PlaylistBasic,
   SongBasic,
   BasicResponse,
+  UpdateProfilePayload,
+  UpdateArtistPayload,
 } from '@common/types';
 
 import './init';
@@ -40,6 +42,14 @@ RegisterNuiCallback(
     cb(await triggerServerCallback<AuthResult>('musicapp:register', data));
   }
 );
+
+RegisterNuiCallback('musicapp:updateProfile', async (data: UpdateProfilePayload, cb: (result: AuthResult) => void) => {
+  cb(await triggerServerCallback<AuthResult>('musicapp:updateProfile', data));
+});
+
+RegisterNuiCallback('musicapp:updateArtistProfile', async (data: UpdateArtistPayload, cb: (result: BasicResponse) => void) => {
+  cb(await triggerServerCallback<BasicResponse>('musicapp:updateArtistProfile', data));
+});
 
 // ---------------------------------------------------------------------------
 // Browse

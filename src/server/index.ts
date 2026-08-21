@@ -1,5 +1,14 @@
 import { RegisterServerCallback } from './utils/callbacks';
-import { getOrCreateUser, logoutUser, loginUser, registerUser, getUserUuid, getArtistId } from './user';
+import {
+  getOrCreateUser,
+  logoutUser,
+  loginUser,
+  registerUser,
+  getUserUuid,
+  getArtistId,
+  updateProfile,
+  updateArtistProfile,
+} from './user';
 import { getHomeScreenData, getLibraryData, getArtistProfile } from './library';
 import { getAlbum, listAlbumsByArtist, createAlbum, updateAlbum, deleteAlbum } from './albums';
 import { getPlaylist } from './playlists';
@@ -26,6 +35,8 @@ import type {
   ArtistProfile,
   HomeScreenData,
   LibraryData,
+  UpdateProfilePayload,
+  UpdateArtistPayload,
 } from '@common/types';
 
 // ---------------------------------------------------------------------------
@@ -46,6 +57,14 @@ RegisterServerCallback<AuthResult>('musicapp:login', async (src, data: { usernam
 
 RegisterServerCallback<AuthResult>('musicapp:register', async (src, data: { username: string; password: string }) => {
   return registerUser(src, data.username, data.password);
+});
+
+RegisterServerCallback<AuthResult>('musicapp:updateProfile', async (src, data: UpdateProfilePayload) => {
+  return updateProfile(src, data);
+});
+
+RegisterServerCallback<BasicResponse>('musicapp:updateArtistProfile', async (src, data: UpdateArtistPayload) => {
+  return updateArtistProfile(src, data);
 });
 
 // ---------------------------------------------------------------------------

@@ -16,3 +16,16 @@ export type AppUser =
 export type AuthResult =
   | { success: true; user: AppUser }
   | { success: false; message: string };
+
+/** Fields a signed-in user may edit on their own account. */
+export type UpdateProfilePayload = {
+  username?: string;
+  profilePic?: string;
+};
+
+/** Fields an artist may edit on their linked artist profile. */
+export type UpdateArtistPayload = {
+  name?: string;
+  bio?: string;
+  image?: string;
+};

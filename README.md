@@ -23,6 +23,21 @@ Beatr is a parody music application inspired by Deezer, taking inspiration from 
 
 ---
 
+## 🛠️ Admin Commands
+
+All commands are ace restricted, this allows the resource to be used in a framework agnostic server.
+
+```bash
+# commands to grant perms
+add_ace group.admin command.createartist allow
+```
+
+| Command | Description |
+| --- | --- |
+| `createartist <username\|uuid> [artistName]` | Link a real (non-anon) user account to a new artist profile. The artist name defaults to the user's username. |
+
+---
+
 ## 🙏 Credits
 
 * 🎨 **UI Template:** [lb-scripts / lb-phone-app-template](https://github.com/lbphone/lb-phone-app-template)
